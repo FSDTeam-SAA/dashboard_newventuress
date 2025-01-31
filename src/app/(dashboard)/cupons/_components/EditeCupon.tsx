@@ -66,7 +66,7 @@ export default function EditeCupon({ setIsOpen }: EditCouponProps) {
       <div className="mx-auto max-w-[1250px] rounded-lg bg-white shadow-sm">
 
         <div className="bg-gradient-to-r from-[#121D42] via-[#152764] to-[#4857BD] flex justify-between items-center rounded-t-[8px] py-[20px] px-[32px]">
-          <h1 className="text-2xl font-semibold text-white text-left">Add Coupons</h1>
+          <h1 className="text-2xl font-semibold text-white text-left">Edit Coupons</h1>
           <div className="">
             <Button
               variant="secondary"
