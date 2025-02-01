@@ -42,7 +42,7 @@ export default function BlogGallery() {
     <div className="w-full max-w-2xl p-6 bg-white rounded-lg shadow-sm">
       <h2 className="text-lg font-medium mb-4">Blog Gallery</h2>
 
-      {/* Dropzone */}
+      
       <div
         className="relative border-2 border-dashed rounded-lg py-[16px]"
         onDragOver={(e) => e.preventDefault()}
@@ -63,7 +63,7 @@ export default function BlogGallery() {
         </div>
       </div>
 
-      {/* Uploaded Images */}
+      
       <div className="grid grid-cols-3 gap-4 mb-4">
         {files.map((file, index) => {
           const imageUrl = URL.createObjectURL(file);
