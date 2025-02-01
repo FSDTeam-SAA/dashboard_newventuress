@@ -5,7 +5,6 @@ import DashboardOverview from "../_components/dashBoardOverview";
 import MostSoldItems from "../_components/MostSoldItems";
 import ProfileCompletion from "../_components/ProfileCompletion";
 import GeoChart from "../_components/TopUserCountries";
-import TotalPaymentVolume from "./_components/totalPaymentVolume/totalPaymentVolume";
 
 const Dashboard = () => {
   return (
@@ -28,15 +27,6 @@ const Dashboard = () => {
         <div className="col-span-2">
           <MostSoldItems />
           <AnalyticsChart />
-        </div>
-      </div>
-      <div className="w-full mx-auto grid grid-cols-2 gap-8 my-[30px]">
-        {/* Geo Chart Component */}
-        <div>
-          <TotalPaymentVolume/>
-        </div>
-        <div className="">
-          <h1>h2</h1>
         </div>
       </div>
     </div>
