@@ -4,17 +4,18 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 
 import { useState } from "react";
 import Modal from "@/components/shared/modal/modal";
-import EditCategory from "./EditCategory";
+// import EditCategory from "./EditCategory";
+import { Category } from "@/types/categories";
 
 interface CategoryCardProps {
-  title: string;
-  imageUrl: string;
-  onDelete: () => void; // Accept delete function
+  data? : Category
+  // onDelete: () => void; 
 }
 
-export function CategoryCard({ title, imageUrl, onDelete }: CategoryCardProps) {
+export function CategoryCard({ data }: CategoryCardProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isOpenEditModal, setIsOpenEditModal] = useState(false);
+
 
   const handleModal = () => setIsOpen(true);
   const handleCategoryEditModal = () => setIsOpenEditModal(true);
@@ -25,13 +26,13 @@ export function CategoryCard({ title, imageUrl, onDelete }: CategoryCardProps) {
         <CardContent className="pt-4">
           <div className="aspect-square relative mb-3">
             <Image
-              src={imageUrl || "/placeholder.svg"}
-              alt={title}
+              src="/assets/img/aboutus.png"
+              alt={data?.categoryName || "image"}
               fill
               className="object-cover w-[306px] h-[270px]"
             />
           </div>
-          <h3 className="text-center text-lg font-medium">{title}</h3>
+          <h3 className="text-center text-lg font-medium">{data?.categoryName}</h3>
         </CardContent>
         <CardFooter className="grid grid-cols-2 gap-2">
           <Button
@@ -75,7 +76,7 @@ export function CategoryCard({ title, imageUrl, onDelete }: CategoryCardProps) {
           <div className="flex justify-center mt-[50px]">
             <button
               onClick={() => {
-                onDelete(); // Call delete function
+                // onDelete(); 
                 setIsOpen(false);
               }}
               className="w-full border-[1px] border-[#4857BD] py-[18px] text-base text-gradient font-semibold rounded-[8px]"
@@ -107,7 +108,7 @@ export function CategoryCard({ title, imageUrl, onDelete }: CategoryCardProps) {
           >
             <div className="absolute inset-0 z-0 bg-[url('/assets/img/modalbg.png')] bg-no-repeat bg-cover rounded-[16px] opacity-50" />
             <div className="relative z-10">
-              <EditCategory title={title} imageUrl={imageUrl} />
+              {/* <EditCategory title={data?.categoryName ?? ''}  /> */}
             </div>
           </div>
         </section>
