@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -12,54 +13,56 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+
+const formSchema = z.object({
+  subject: z.string().min(2, {
+    message: "Subject must be at least 10 characters.",
+  }),
+  text: z.string().min(2, {
+    message: "Text must be at least 20 characters.",
+  }),
+});
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { X } from "lucide-react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+// import { X } from "lucide-react";
 import { useSession } from "next-auth/react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Input } from "@/components/ui/input";
+import { X } from "lucide-react";
+import JoditInput from "@/components/ui/JoditInput";
 
-
-const formSchema = z.object({
-  email: z.string(),
-});
-
-const AddNewsLetter = ({
+const SendBulkNewsLetter = ({
   open,
   onOpenChange,
-  isOpen,
-  setIsOpen,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  isOpen: boolean;
-  setIsOpen: (isOpen: boolean) => void;
 }) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: "",
+      subject: "",
+      text: "",
     },
   });
 
   const session = useSession();
   const token = session?.data?.user?.token;
   console.log({ token });
-
   const queryClient = useQueryClient();
 
   const { mutate, isPending } = useMutation({
-    mutationKey: ["add-news-letter"],
-    mutationFn: (data:any) =>
-      fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/newsletter`, {
+    mutationKey: ["send-bulk-news-letter"],
+    mutationFn: (data: any) =>
+      fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/send-email`, {
         method: "POST",
         headers: {
-         "Content-Type": "application/json",
+          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(data),
@@ -79,16 +82,13 @@ const AddNewsLetter = ({
         position: "top-right",
         richColors: true,
       });
-      queryClient.invalidateQueries({ queryKey: ["news-letter"] })
-    }
-    
+      queryClient.invalidateQueries({ queryKey: ["news-letter"] });
+    },
   });
 
   // 2. Define a submit handler.
   function onSubmit(values: z.infer<typeof formSchema>) {
-
     mutate(values);
-
     console.log(values);
   }
   return (
@@ -97,31 +97,38 @@ const AddNewsLetter = ({
         <DialogContent>
           <DialogHeader>
             <DialogTitle className="w-full flex items-center justify-end">
-              <X
-                onClick={() => setIsOpen(!isOpen)}
-                className="cursor-pointer"
-              />
+              <X className="cursor-pointer" onClick={() => onOpenChange(false)}/>
             </DialogTitle>
           </DialogHeader>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <FormField
                 control={form.control}
-                name="email"
+                name="subject"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel>Subject</FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter your email ..." {...field} />
+                      <Input placeholder="Enter Your Subject ....." {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              <div className="w-full flex items-center justify-end">
-                <Button disabled={isPending} type="submit">
-                  {isPending ? "Submitting..." : "Submit"}
-                </Button>
+              <FormField
+                control={form.control}
+                name="text"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Message</FormLabel>
+                    <JoditInput control={form.control} name={field.name} placeholder="Start typing..." />
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <div className="flex items-center justify-end">
+              <Button disabled={isPending} type="submit">{isPending ? "Submitting..." : "Submit"}</Button>
               </div>
             </form>
           </Form>
@@ -131,4 +138,4 @@ const AddNewsLetter = ({
   );
 };
 
-export default AddNewsLetter;
+export default SendBulkNewsLetter;
