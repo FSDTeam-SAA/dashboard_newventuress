@@ -89,7 +89,7 @@ const TableContainer = ({
   });
   return (
     <>
-      <DataTable table={table} columns={columns} title="Auctions/Listing" />
+      <DataTable table={table} columns={columns} title="Listing" />
     </>
   );
 };

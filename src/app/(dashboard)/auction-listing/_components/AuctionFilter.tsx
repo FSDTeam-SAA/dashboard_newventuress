@@ -7,7 +7,7 @@ import { useState } from "react";
 const showList = [
   { id: 1, name: "INDUSTRY", value: "industry" },
   { id: 2, name: "HEMP/CBD", value: "cbd" },
-  { id: 3, name: "RECREATIONAL", value: "recreational" },
+  { id: 3, name: "RECREATIONAL CANNABIS", value: "recreational" },
 ];
 
 const ChoseStoresList = [
@@ -56,7 +56,6 @@ function AuctionFilter({ show, setShow }: any) {
           />
         </div>
         <div className="h-full flex items-center gap-2">
-
           <PacificDropdownSelector
             list={FilterByCtegoryList}
             selectedValue={ctegorys}
@@ -64,7 +63,6 @@ function AuctionFilter({ show, setShow }: any) {
           />
         </div>
         <div className="h-full flex items-center gap-2">
-
           <PacificDropdownSelector
             list={AllProductTypesList}
             selectedValue={products}
@@ -73,10 +71,12 @@ function AuctionFilter({ show, setShow }: any) {
         </div>
       </div>
       <div>
-        <button className="px-[20px] py-[9px] bg-primary text-[#F5F5F5] rounded-lg">Bulk Delete</button>
+        <button className="px-[20px] py-[9px] bg-primary text-[#F5F5F5] rounded-lg">
+          Bulk Delete
+        </button>
       </div>
     </div>
-  )
+  );
 }
 
-export default AuctionFilter
+export default AuctionFilter;

@@ -8,7 +8,8 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
-import { ImageIcon } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { ImageIcon, X } from "lucide-react";
 import Image from "next/image";
 import { TiEdit } from "react-icons/ti";
 import { useSession } from "next-auth/react";
@@ -16,25 +17,18 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import type { SubCategoryDataResponse } from "@/data/subCategory";
 import { toast } from "sonner";
 
+interface SelectedSubCategory {
+  _id: string;
+  name: string;
+}
+
 interface CategoryCardProps {
-  title: string;
-  imageUrl: string;
-  description: string;
   categoryId: string;
-  industry: string;
-  subCategoryId?: string;
-  subCategoryName?: string;
   setIsOpenEditModal: (data: boolean) => void;
 }
 
 export function EditCategory({
-  title,
-  imageUrl,
-  description,
   categoryId,
-  industry = "cbd", // Default to CBD if not provided
-  subCategoryId = "",
-  subCategoryName = "",
   setIsOpenEditModal,
 }: CategoryCardProps) {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -44,28 +38,81 @@ export function EditCategory({
   const session = useSession();
   const token = session.data?.user?.token;
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedItem, setSelectedItem] = useState(subCategoryName || "");
-  const [id, setId] = useState(subCategoryId || "");
+  const [selectedSubCategories, setSelectedSubCategories] = useState<
+    SelectedSubCategory[]
+  >([]);
   const [isLoading, setIsLoading] = useState(false);
 
   const [formData, setFormData] = useState({
-    categoryName: title,
-    description: description,
-    industry: industry,
+    categoryName: "",
+    shortDescription: "",
+    industry: "cbd",
   });
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
-  // Set initial values when props change
-  useEffect(() => {
-    setFormData({
-      categoryName: title,
-      description: description,
-      industry: industry,
+  const queryClient = useQueryClient();
+
+  // Fetch category data
+  const { data, isLoading: isCategoryLoading } = useQuery({
+    queryKey: ["category", categoryId],
+    queryFn: async () => {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/categories/${categoryId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Failed to fetch category data");
+      }
+      return response.json();
+    },
+    enabled: !!categoryId && !!token,
+  });
+  const categoryData = data?.data;
+
+  // Fetch all subcategories
+  const { data: subCategoriesData, isLoading: isLoadingSubcategories } =
+    useQuery<SubCategoryDataResponse>({
+      queryKey: ["allsubcategory"],
+      queryFn: async (): Promise<SubCategoryDataResponse> =>
+        fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/subcategories`, {
+          method: "GET",
+        }).then((res) => res.json() as Promise<SubCategoryDataResponse>),
     });
-    setSelectedItem(subCategoryName || "");
-    setId(subCategoryId || "");
-  }, [title, description, industry, subCategoryName, subCategoryId]);
+
+  // Initialize form data and the selected subcategories when category data is fetched
+  useEffect(() => {
+    if (categoryData) {
+      setFormData({
+        categoryName: categoryData.categoryName || "",
+        shortDescription: categoryData.shortDescription || "",
+        industry: categoryData.industry || "cbd",
+      });
+      setImagePreview(categoryData.image);
+
+      if (
+        subCategoriesData &&
+        subCategoriesData.data &&
+        categoryData.subCategory
+      ) {
+        const subCategoryArray = Array.isArray(categoryData.subCategory)
+          ? categoryData.subCategory
+          : [categoryData.subCategory];
+
+        const initialSelected = subCategoriesData.data
+          .filter((item) => subCategoryArray.includes(item._id))
+          .map((item) => ({
+            _id: item._id,
+            name: item.subCategoryName,
+          }));
+        setSelectedSubCategories(initialSelected);
+      }
+    }
+  }, [categoryData, subCategoriesData]);
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
@@ -112,8 +159,6 @@ export function EditCategory({
     reader.readAsDataURL(file);
   };
 
-  const queryClient = useQueryClient();
-
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -124,12 +169,26 @@ export function EditCategory({
     }));
   };
 
-  // Handle radio group change
   const handleRadioChange = (value: string) => {
     setFormData((prevData) => ({
       ...prevData,
       industry: value,
     }));
+  };
+
+  const handleSelect = (item: { _id: string; subCategoryName: string }) => {
+    if (!selectedSubCategories.some((subCat) => subCat._id === item._id)) {
+      setSelectedSubCategories((prev) => [
+        ...prev,
+        { _id: item._id, name: item.subCategoryName },
+      ]);
+    }
+  };
+
+  const handleRemoveSubCategory = (id: string) => {
+    setSelectedSubCategories((prev) =>
+      prev.filter((subCat) => subCat._id !== id)
+    );
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -140,24 +199,53 @@ export function EditCategory({
       return;
     }
 
-    if (!id) {
-      toast.error("Please select a subcategory");
+    if (selectedSubCategories.length === 0) {
+      toast.error("Please select at least one subcategory");
       return;
     }
 
     setIsLoading(true);
 
-    const formDataToSubmit = new FormData();
-    formDataToSubmit.append("categoryName", formData.categoryName);
-    formDataToSubmit.append("subCategory", id);
-    formDataToSubmit.append("description", formData.description);
-    formDataToSubmit.append("industry", formData.industry);
-
-    if (selectedFile) {
-      formDataToSubmit.append("image", selectedFile);
-    }
-
     try {
+      // First, let's log what we're about to send to help debug
+      console.log("Submitting form data:", {
+        categoryName: formData.categoryName,
+        shortDescription: formData.shortDescription,
+        industry: formData.industry,
+        subCategory: selectedSubCategories.map((sc) => sc._id),
+        hasImage: !!selectedFile,
+      });
+
+      const formDataToSubmit = new FormData();
+      formDataToSubmit.append("categoryName", formData.categoryName);
+
+      // Only include shortDescription if it has a value
+      if (formData.shortDescription) {
+        formDataToSubmit.append("shortDescription", formData.shortDescription);
+      }
+
+      formDataToSubmit.append("industry", formData.industry);
+
+      // For subCategory, try different formats based on what the API might expect
+      if (selectedSubCategories.length === 1) {
+        // If only one subcategory, send it as a single value
+        formDataToSubmit.append("subCategory", selectedSubCategories[0]._id);
+      } else {
+        // If multiple subcategories, try an array format
+        selectedSubCategories.forEach((subCat, index) => {
+          formDataToSubmit.append(`subCategory[${index}]`, subCat._id);
+        });
+      }
+
+      if (selectedFile) {
+        formDataToSubmit.append("image", selectedFile);
+      }
+
+      // Log the FormData entries for debugging
+      for (const [key, value] of Array.from(formDataToSubmit.entries())) {
+        console.log(`${key}: ${value}`);
+      }
+
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/categories/${categoryId}`,
         {
@@ -169,11 +257,17 @@ export function EditCategory({
         }
       );
 
+      // Log the response status and headers
+      console.log("Response status:", response.status);
+      console.log("Response headers:", response.headers);
+
       const result = await response.json();
+      console.log("Response data:", result);
 
       if (response.ok) {
         toast.success("Category updated successfully!");
         queryClient.invalidateQueries({ queryKey: ["allcategory"] });
+        queryClient.invalidateQueries({ queryKey: ["category", categoryId] });
         setIsOpenEditModal(false);
       } else {
         toast.error(`Error: ${result.message || "Failed to update category"}`);
@@ -186,25 +280,14 @@ export function EditCategory({
     }
   };
 
-  const { data, isLoading: isLoadingSubcategories } =
-    useQuery<SubCategoryDataResponse>({
-      queryKey: ["allsubcategory"],
-      queryFn: async (): Promise<SubCategoryDataResponse> =>
-        fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/subcategories`, {
-          method: "GET",
-        }).then((res) => res.json() as Promise<SubCategoryDataResponse>),
-    });
-
-  const handleSelect = (item: string, id: string) => {
-    setSelectedItem(item);
-    setIsOpen(false);
-    setId(id);
-  };
-
   const handleFileButtonClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     fileInputRef.current?.click();
   };
+
+  if (isCategoryLoading) {
+    return <div>Loading category data...</div>;
+  }
 
   return (
     <div>
@@ -232,7 +315,7 @@ export function EditCategory({
 
                 <div className="space-y-2">
                   <Label>
-                    Sub Category <span className="text-red-500">*</span>
+                    Sub Categories <span className="text-red-500">*</span>
                   </Label>
                   <div className="relative inline-block text-left w-full border-[1px] border-[#B0B0B0] py-2 rounded-[8px]">
                     <button
@@ -243,10 +326,9 @@ export function EditCategory({
                       className="font-medium rounded-lg text-sm text-[#444444] px-2 py-2.5 text-center inline-flex justify-between items-center w-full"
                       type="button"
                     >
-                      {selectedItem ||
-                        (isLoadingSubcategories
-                          ? "Loading subcategories..."
-                          : "Select Sub Category")}
+                      {isLoadingSubcategories
+                        ? "Loading subcategories..."
+                        : "Select Sub Categories"}
                       <svg
                         className="w-2.5 h-2.5 ms-3"
                         aria-hidden="true"
@@ -267,14 +349,20 @@ export function EditCategory({
                     {isOpen && (
                       <div className="absolute z-10 mt-2 bg-white divide-y divide-gray-100 rounded-lg w-full shadow-md cursor-pointer">
                         <ul className="py-2 text-sm text-gray-700 max-h-60 overflow-y-auto">
-                          {data && data.data && Array.isArray(data.data) ? (
-                            data.data.map((item) => (
+                          {subCategoriesData &&
+                          subCategoriesData.data &&
+                          Array.isArray(subCategoriesData.data) ? (
+                            subCategoriesData.data.map((item) => (
                               <li key={item._id}>
                                 <p
-                                  onClick={() =>
-                                    handleSelect(item.subCategoryName, item._id)
-                                  }
-                                  className="w-full text-left px-4 py-2 hover:bg-gray-100"
+                                  onClick={() => handleSelect(item)}
+                                  className={`w-full text-left px-4 py-2 hover:bg-gray-100 ${
+                                    selectedSubCategories.some(
+                                      (sc) => sc._id === item._id
+                                    )
+                                      ? "bg-primary text-white font-medium "
+                                      : ""
+                                  }`}
                                 >
                                   {item.subCategoryName}
                                 </p>
@@ -291,14 +379,33 @@ export function EditCategory({
                       </div>
                     )}
                   </div>
+                  {/* Display selected subcategories */}
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {selectedSubCategories.map((subCat) => (
+                      <Badge
+                        key={subCat._id}
+                        variant="secondary"
+                        className="px-2 py-1 flex items-center gap-1 bg-primary text-white"
+                      >
+                        {subCat.name}
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveSubCategory(subCat._id)}
+                          className="text-gray-500 hover:text-gray-700 focus:outline-none"
+                        >
+                          <X className="h-3 w-3 text-red-500" />
+                        </button>
+                      </Badge>
+                    ))}
+                  </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="description">Short Description</Label>
+                  <Label htmlFor="shortDescription">Short Description</Label>
                   <Textarea
-                    id="description"
-                    name="description"
-                    value={formData.description}
+                    id="shortDescription"
+                    name="shortDescription"
+                    value={formData.shortDescription}
                     onChange={handleInputChange}
                     placeholder="Type Description here"
                     className="min-h-[91px] border border-[#B0B0B0]"
@@ -339,7 +446,7 @@ export function EditCategory({
                         ? "border-blue-500 bg-blue-50"
                         : "border-gray-300"
                     } 
-                    ${imagePreview || imageUrl ? "p-2" : "p-6"}`}
+                    ${imagePreview ? "p-2" : "p-6"}`}
                     onDragOver={handleDragOver}
                     onDragLeave={handleDragLeave}
                     onDrop={handleDrop}
@@ -352,10 +459,10 @@ export function EditCategory({
                       accept="image/jpeg,image/png"
                       onChange={handleFileInput}
                     />
-                    {imagePreview || imageUrl ? (
+                    {imagePreview ? (
                       <div className="relative aspect-video w-full h-[257px]">
                         <Image
-                          src={imagePreview || imageUrl}
+                          src={imagePreview || "/placeholder.svg"}
                           alt="Category preview"
                           fill
                           className="object-cover rounded"

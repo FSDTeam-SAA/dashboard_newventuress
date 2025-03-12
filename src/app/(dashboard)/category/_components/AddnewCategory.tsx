@@ -378,7 +378,7 @@ export default function AddCategoryForm({
                     </div>
                     <div className="flex items-center space-x-2">
                       <RadioGroupItem value="recreational" id="recreational" />
-                      <Label htmlFor="recreational">Recreational</Label>
+                      <Label htmlFor="recreational">Recreational Cannabis</Label>
                     </div>
                   </RadioGroup>
                 </div>
