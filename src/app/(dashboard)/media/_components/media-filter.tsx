@@ -17,12 +17,12 @@ const categoriesList = [
 const typeList = [
   { id: 1, name: "All Product Types", value: "all" },
   { id: 2, name: "CBD", value: "sales" },
-  { id: 3, name: "Recreational", value: "Recreational" },
+  { id: 3, name: "Recreational Cannabis", value: "Recreational" },
 ];
 const storeList = [
   { id: 1, name: "Choose stores", value: "all" },
   { id: 2, name: "CBD", value: "sales" },
-  { id: 3, name: "Recreational", value: "Recreational" },
+  { id: 3, name: "Recreational Cannabis", value: "Recreational" },
 ];
 
 const MediaFilter = () => {
@@ -30,8 +30,6 @@ const MediaFilter = () => {
   const [category, setCategory] = useState<string>("all"); // Default to "auctions"
   const [types, setTypes] = useState<string>("all"); // Default to "auctions"
   const [stores, setStores] = useState<string>("all"); // Default to "auctions"
-
-
 
   return (
     <div className="h-[60px] p-[8px] bg-white w-full flex justify-between items-center rounded-[12px]">
@@ -75,7 +73,9 @@ const MediaFilter = () => {
           />
         </div>
       </div>
-      <Button className="w-[135px] h-[43px] px-[24px] py-[12px] text-[16px] font-medium leading-[19.2px]">Bulk Delete</Button>
+      <Button className="w-[135px] h-[43px] px-[24px] py-[12px] text-[16px] font-medium leading-[19.2px]">
+        Bulk Delete
+      </Button>
     </div>
   );
 };

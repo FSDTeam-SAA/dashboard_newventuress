@@ -4,7 +4,7 @@ import CategoryTogler from "./_components/CategoryTogler";
 
 const page = () => {
   return (
-    <div >
+    <div>
       <CategoryTogler />
     </div>
   );

@@ -22,7 +22,7 @@ const JoditInput: React.FC<JoditInputProps> = ({ control, name, placeholder, cla
       "bold", "italic", "underline", "paragraph", "|",
       "h1", "h2", "h3", "h4", "h5", "h6", "|", "redo", "undo", "ul", "ol", "align", "link", "|",
        "strikethrough", "superscript", "subscript",
-      "|", "image", "table", 
+      "|", "image", 
     ],
     toolbarSticky: false,
     tooltip: {

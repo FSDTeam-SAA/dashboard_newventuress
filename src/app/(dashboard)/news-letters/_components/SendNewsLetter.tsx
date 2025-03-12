@@ -16,12 +16,7 @@ import {
 import { Input } from "@/components/ui/input";
 
 const formSchema = z.object({
-  subject: z.string().min(2, {
-    message: "Subject must be at least 10 characters.",
-  }),
-  text: z.string().min(2, {
-    message: "Text must be at least 20 characters.",
-  }),
+  email: z.string().email("Invalid email Address. Please enter a valid email."),
 });
 import {
   Dialog,
@@ -33,7 +28,6 @@ import { X } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import JoditInput from "@/components/ui/JoditInput";
 
 const SendNewsLetter = ({
   open,
@@ -45,8 +39,7 @@ const SendNewsLetter = ({
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      subject: "",
-      text: "",
+      email: "",
     },
   });
 
@@ -58,7 +51,7 @@ const SendNewsLetter = ({
   const {mutate, isPending} = useMutation({
     mutationKey: ["send-news-letter"],
     mutationFn: (data:any) =>
-      fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/send-email`, {
+      fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/newsletter`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -103,25 +96,13 @@ const SendNewsLetter = ({
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <FormField
                 control={form.control}
-                name="subject"
+                name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Subject</FormLabel>
+                    <FormLabel>Email <span className="text-red-500">*</span></FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter Your Subject ....." {...field} />
+                      <Input placeholder="Enter Your Email ....." {...field} />
                     </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="text"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Message</FormLabel>
-                    <JoditInput control={form.control} name={field.name} placeholder="Start typing..." />
-
                     <FormMessage />
                   </FormItem>
                 )}

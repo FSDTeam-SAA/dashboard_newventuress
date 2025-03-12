@@ -13,7 +13,7 @@ const Membership = () => {
     useState(false);
   const [tabValue, setTabValue] = useState<string>("membership");
   console.log(tabValue);
-  
+
   return (
     <div className="space-y-[30px]">
       <MembershipFilter
@@ -31,12 +31,14 @@ const Membership = () => {
       {showMembership ? (
         <AddNewMembership setShowMembership={setShowMembership} />
       ) : showAdditionalMembership ? (
-        <AddSponsoredListing setShowSponsoredListing={setShowAdditionalMembership} />
+        <AddSponsoredListing
+          setShowSponsoredListing={setShowAdditionalMembership}
+        />
       ) : tabValue === "membership" ? (
         <MembershipContainer />
       ) : tabValue === "additional" ? (
-              // <div className="text-center text-xl font-bold">Hello World</div>
-              <AddSponsoredContainer/>
+        // <div className="text-center text-xl font-bold">Hello World</div>
+        <AddSponsoredContainer />
       ) : null}
     </div>
   );
