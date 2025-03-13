@@ -28,6 +28,8 @@ export default function CategoryList({ show }: any) {
       ).then((res) => res.json() as Promise<categoryDataResponse>),
   });
 
+  console.log({data})
+
   const queryClient = useQueryClient();
   const { mutate } = useMutation({
     mutationKey: ["deletecategory"],

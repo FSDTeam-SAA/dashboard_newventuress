@@ -21,16 +21,26 @@ import {
 import { MoreHorizontal, MoveRight, Trash2, Edit } from "lucide-react";
 import EmailSendingForm from "./email-sending-form";
 import { useSession } from "next-auth/react";
-import EditMembershipForm from "./EditMembershipForm";
 import { toast } from "sonner";
+import EditSponsoredListingForm from "./EditMembershipForm";
 
-const MembershipAction = ({
+interface SponsoredListingData {
+  _id: string;
+  planTitle: string;
+  description: string;
+  price: number;
+  numberOfListing: number;
+}
+
+interface SponsoredListingActionProps {
+  id: string;
+  initialData: SponsoredListingData;
+}
+
+const SponsoredListingAction = ({
   id,
   initialData,
-}: {
-  id: string;
-  initialData: any;
-}) => {
+}: SponsoredListingActionProps) => {
   const [emailOpen, setEmailOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
@@ -38,71 +48,39 @@ const MembershipAction = ({
   const queryClient = useQueryClient();
   const { data: session } = useSession();
 
-  // Delete Membership
-  const deleteMembership = async () => {
+  // Delete Sponsored Listing
+  const deleteSponsoredListing = async () => {
     if (!session?.user?.token) {
       throw new Error("Unauthorized: No token found");
     }
-    const res = await fetch(`http://localhost:8001/api/memberships/${id}`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${session?.user.token}`,
-      },
-    });
+    const res = await fetch(
+      `http://localhost:8001/api/admin/sponsoredlisting/${id}`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session?.user.token}`,
+        },
+      }
+    );
 
     if (!res.ok) {
-      throw new Error("Failed to delete membership");
+      throw new Error("Failed to delete sponsored listing");
     }
   };
 
   const deleteMutation = useMutation({
-    mutationFn: deleteMembership,
+    mutationFn: deleteSponsoredListing,
     onSuccess: () => {
-      toast.success("Membership plan deleted successfully!");
-      queryClient.invalidateQueries({ queryKey: ["membership"] });
+      toast.success("Sponsored listing deleted successfully!");
+      queryClient.invalidateQueries({ queryKey: ["sponsoredListing"] });
       setDeleteOpen(false);
     },
     onError: (error) => {
       console.error("Delete failed:", error);
+      toast.error("Failed to delete sponsored listing");
     },
   });
-
-  // Edit Membership
-  const updateMembership = async (updatedData: any) => {
-    if (!session?.user?.token) {
-      throw new Error("Unauthorized: No token found");
-    }
-    const res = await fetch(`http://localhost:8001/api/memberships/${id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${session.user.token}`,
-      },
-      body: JSON.stringify(updatedData),
-    });
-
-    if (!res.ok) {
-      throw new Error("Failed to update membership");
-    }
-    return res.json();
-  };
-
-  const editMutation = useMutation({
-    mutationFn: updateMembership,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["membership"] });
-      setEditOpen(false);
-    },
-    onError: (error) => {
-      console.error("Edit failed:", error);
-    },
-  });
-
-  const handleEditSubmit = (updatedData: any) => {
-    toast.success("Membership plan updated successfully!");
-    editMutation.mutate(updatedData);
-  };
 
   return (
     <div>
@@ -170,7 +148,7 @@ const MembershipAction = ({
                 <p className="text-white text-[32px] ">Are you sure?</p>
               </div>
               <AlertDialogDescription className="text-center">
-                This will permanently delete the membership.
+                This will permanently delete the sponsored listing.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter className="mt-8">
@@ -189,20 +167,19 @@ const MembershipAction = ({
         </AlertDialog>
       )}
 
-      {/* Edit Membership Dialog */}
+      {/* Edit Sponsored Listing Dialog */}
       {editOpen && (
         <AlertDialog open={editOpen} onOpenChange={setEditOpen}>
           <AlertDialogContent className="max-w-3xl">
             <AlertDialogHeader>
               <div className="w-full h-[78px] bg-primary rounded-t-[16px] flex items-center justify-between px-[32px]">
-                <p className="text-white text-[32px]">Edit Membership Plan</p>
+                <p className="text-white text-[32px]">Edit Sponsored Listing</p>
               </div>
             </AlertDialogHeader>
             <div>
-              <EditMembershipForm
+              <EditSponsoredListingForm
                 initialData={initialData}
-                onSubmit={handleEditSubmit}
-                isSubmitting={editMutation.isPending}
+                id={id}
                 onCancel={() => setEditOpen(false)}
               />
             </div>
@@ -213,4 +190,4 @@ const MembershipAction = ({
   );
 };
 
-export default MembershipAction;
+export default SponsoredListingAction;
