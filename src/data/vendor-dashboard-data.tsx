@@ -8,7 +8,7 @@ import {
   Settings,
   ShieldQuestion,
   ShoppingCart,
-  UserPlus
+  UserPlus,
 } from "lucide-react";
 import Image from "next/image";
 
@@ -26,13 +26,13 @@ export const sidebarContents = [
     id: 1,
     name: "Dashboard",
     icon: <LayoutDashboard className="h-[16px] w-[16px]" />,
-    href: "/"
+    href: "/",
   },
   {
     id: 2,
     name: "Media",
     icon: <BookImage className="h-[16px] w-[16px]" />,
-    href: "/media"
+    href: "/media",
   },
   {
     id: 3,
@@ -45,7 +45,7 @@ export const sidebarContents = [
         height={16}
       />
     ),
-    href: "/category"
+    href: "/category",
   },
   {
     id: 33,
@@ -58,7 +58,7 @@ export const sidebarContents = [
         height={16}
       />
     ),
-    href: "/sub-category"
+    href: "/sub-category",
   },
   {
     id: 4,
@@ -71,13 +71,13 @@ export const sidebarContents = [
         height={16}
       />
     ),
-    href: "/vendor-management"
+    href: "/vendor-management",
   },
   {
     id: 5,
-    name: "Auction/Listing",
+    name: "Listing",
     icon: <Box className="h-[16px] w-[16px]" />,
-    href: "/auction-listing"
+    href: "/auction-listing",
   },
   {
     id: 6,
@@ -91,13 +91,13 @@ export const sidebarContents = [
         height={16}
       />
     ),
-    href: "/auctions"
+    href: "/auctions",
   },
   {
     id: 7,
     name: "Order",
     icon: <ShoppingCart className="h-[16px] w-[16px]" />,
-    href: "/orders"
+    href: "/orders",
   },
   {
     id: 8,
@@ -110,7 +110,7 @@ export const sidebarContents = [
         height={16}
       />
     ),
-    href: "/customers"
+    href: "/customers",
   },
   {
     id: 9,
@@ -123,7 +123,7 @@ export const sidebarContents = [
         height={16}
       />
     ),
-    href: "/store-management"
+    href: "/store-management",
   },
   {
     id: 10,
@@ -136,7 +136,7 @@ export const sidebarContents = [
         height={16}
       />
     ),
-    href: "/financial-management"
+    href: "/financial-management",
   },
   {
     id: 11,
@@ -149,14 +149,14 @@ export const sidebarContents = [
         height={16}
       />
     ),
-    href: "/marketing-promotions"
+    href: "/marketing-promotions",
   },
 
   {
     id: 12,
-    name: "Cupons",
+    name: "Coupons",
     icon: <Gift className="h-[16px] w-[16px]" />,
-    href: "/cupons"
+    href: "/coupons",
   },
   {
     id: 13,
@@ -169,7 +169,7 @@ export const sidebarContents = [
         height={16}
       />
     ),
-    href: "/blogs-management"
+    href: "/blogs-management",
   },
   {
     id: 14,
@@ -182,7 +182,7 @@ export const sidebarContents = [
         height={16}
       />
     ),
-    href: "/content-management"
+    href: "/content-management",
   },
   {
     id: 15,
@@ -196,37 +196,37 @@ export const sidebarContents = [
         height={16}
       />
     ),
-    href: "/reports"
+    href: "/reports",
   },
   {
     id: 16,
     name: "Reviews",
     icon: <MessageSquare className="h-[16px] w-[16px]" />,
-    href: "/reviews"
+    href: "/reviews",
   },
   {
     id: 17,
     name: "Settings",
     icon: <Settings className="h-[16px] w-[16px]" />,
-    href: "/settings"
+    href: "/settings",
   },
   {
     id: 18,
     name: "Membership",
     icon: <UserPlus className="h-[16px] w-[16px]" />,
-    href: "/membership"
+    href: "/membership",
   },
   {
     id: 19,
     name: "Help & Support",
     icon: <ShieldQuestion className="h-[16px] w-[16px]" />,
-    href: "/help-support"
+    href: "/help-support",
   },
   {
     id: 20,
     name: "NewsLetters",
-    icon: <Mails className="h-[16px] w-[16px]"/>,
-    href: "/news-letters"
+    icon: <Mails className="h-[16px] w-[16px]" />,
+    href: "/news-letters",
   },
 ] as SidebarContentType[];
 
@@ -236,5 +236,5 @@ export const getCurrentTab = (
   return sidebarContents
     .slice() // Create a copy of the array to avoid mutating the original
     .sort((a, b) => b.href.length - a.href.length) // Sort by href length (longer paths first)
-    .find(tab => fullPath.startsWith(tab.href));
+    .find((tab) => fullPath.startsWith(tab.href));
 };

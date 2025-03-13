@@ -18,7 +18,7 @@ interface CategoryCardProps {
   description: string;
   slug: string;
   industry?: string;
-  // subCategory: number
+  subCategory: string[];
   onDelete: () => void;
 }
 
@@ -29,6 +29,7 @@ export function CategoryCard({
   description,
   categoryId,
   industry,
+  subCategory,
 }: CategoryCardProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isOpenEditModal, setIsOpenEditModal] = useState(false);
@@ -36,7 +37,6 @@ export function CategoryCard({
   const handleModal = () => setIsOpen(true);
   const handleCategoryEditModal = () => setIsOpenEditModal(true);
   // console.log(description);
-
 
   return (
     <div>
@@ -49,12 +49,11 @@ export function CategoryCard({
               fill
               className="object-cover w-[306px] h-[270px] rounded-xl"
             />
-           {
-            industry &&
-             <Badge variant="default" className="absolute -top-6 -right-6">
-              {industry }
-            </Badge>
-            }
+            {industry && (
+              <Badge variant="default" className="absolute -top-6 -right-6">
+                {industry}
+              </Badge>
+            )}
           </div>
           <h3 className="text-center text-lg font-medium">{title}</h3>
         </CardContent>
@@ -129,10 +128,6 @@ export function CategoryCard({
             <div className="absolute inset-0 z-0 bg-[url('/assets/img/modalbg.png')] bg-no-repeat bg-cover rounded-[16px] opacity-50" />
             <div className="relative z-10">
               <EditCategory
-                title={title}
-                imageUrl={imageUrl}
-                description={description}
-                industry={""}
                 categoryId={categoryId}
                 setIsOpenEditModal={setIsOpenEditModal}
               />
@@ -141,7 +136,5 @@ export function CategoryCard({
         </section>
       )}
     </div>
-
-    
   );
 }

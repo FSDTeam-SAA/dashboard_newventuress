@@ -58,22 +58,24 @@ const NewsLetterContainer = () => {
   }
   return (
     <section className="w-full">
-      <div className="w-full shadow-[0px_0px_22px_8px_#C1C9E4] h-auto  rounded-[24px] bg-white">
+      <div className="w-full shadow-[0px_0px_22px_8px_#C1C9E4] h-auto  rounded-[24px] bg-white mb-20">
         {content}
       </div>
-      <div className="mt-[30px]  w-full pb-[208px]  flex justify-between">
-        <p className="font-normal text-[16px] leading-[19.2px] text-[#444444]">
-          Showing {currentPage} to {data?.meta?.totalPages} in first entries
-        </p>
-        <div>
-          {data && data?.meta && data?.meta.totalPages > 0 && (
-            <PacificPagination
-              currentPage={currentPage}
-              totalPages={data?.meta.totalPages}
-              onPageChange={(page) => setCurrentPage(page)}
-            />
-          )}
-        </div>
+      <div>
+        {data && data?.meta && data?.meta.totalPages > 1 && (
+          <div className="mt-[30px]  w-full pb-[208px]  flex justify-between">
+            <p className="font-normal text-[16px] leading-[19.2px] text-[#444444]">
+              Showing {currentPage} to {data?.meta?.totalPages} in first entries
+            </p>
+            <div>
+              <PacificPagination
+                currentPage={currentPage}
+                totalPages={data?.meta.totalPages}
+                onPageChange={(page) => setCurrentPage(page)}
+              />
+            </div>
+          </div>
+        )}
       </div>
     </section>
   );

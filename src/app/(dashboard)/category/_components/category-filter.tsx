@@ -6,8 +6,8 @@ import { Box } from "lucide-react";
 // Demo lists for the dropdowns
 const showList = [
   { id: 1, name: "INDUSTRY", value: "industry" },
-  { id: 2, name: "HEMP/CBD", value: "cbd/hemp" },
-  { id: 3, name: "RECREATIONAL", value: "recreational" },
+  { id: 2, name: "HEMP/CBD", value: "cbd" },
+  { id: 3, name: "RECREATIONAL CANNBIS", value: "recreational" },
 ];
 
 const CategoryFilter = ({
@@ -33,7 +33,7 @@ const CategoryFilter = ({
       </div>
       <div className="mr-2">
         <Button
-          onClick={() => setShowCategory((prev:any) => !prev)}
+          onClick={() => setShowCategory((prev: any) => !prev)}
           className="h-[43px] px-[24px] py-[12px] text-[16px] font-medium leading-[19.2px]"
         >
           {showcategory ? "Category List" : "Add New"} <Box />

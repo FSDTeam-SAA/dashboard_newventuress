@@ -7,9 +7,10 @@ export interface categoryDataType {
   subCategoryName: string;
   _id: string;
   categoryName: string;
+  title: string;
   image: string;
   slug: string;
-  subCategory: number;
+  subCategory: string[];
   shortDescription: string;
   industry: string;
   __v: number;
