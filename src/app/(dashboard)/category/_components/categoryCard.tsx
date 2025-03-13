@@ -34,6 +34,12 @@ export function CategoryCard({
   const [isOpen, setIsOpen] = useState(false);
   const [isOpenEditModal, setIsOpenEditModal] = useState(false);
 
+  const industryMap: Record<string, string> = {
+    cbd: "HEMP/CBD",
+    recreational: "Recreational Cannabis",
+  };
+  
+
   const handleModal = () => setIsOpen(true);
   const handleCategoryEditModal = () => setIsOpenEditModal(true);
   // console.log(description);
@@ -51,6 +57,7 @@ export function CategoryCard({
             />
             {industry && (
               <Badge variant="default" className="absolute -top-6 -right-6">
+
                 {industry == "recreational"
                   ? "RECREATIONAL CANNABIS"
                   : "HEMP/CBD"}
