@@ -5,9 +5,9 @@ import dynamic from "next/dynamic";
 import DashboardOverview from "./_components/dashBoardOverview";
 import MostSoldItems from "./_components/MostSoldItems";
 import ProfileCompletion from "./_components/ProfileCompletion";
-const GeoChart = dynamic(() => import("./_components/TopUserCountries"), {
-  ssr: false,
-});
+// const GeoChart = dynamic(() => import("./_components/TopUserCountries"), {
+//   ssr: false,
+// });
 const AnalyticsChart = dynamic(() => import("./_components/analytics-chart"), {
   ssr: false,
 });
@@ -29,7 +29,7 @@ const Dashboard = async () => {
       {/* Main Content Grid */}
       <div className="w-full mx-auto grid grid-cols-6 gap-4 2xl:gap-8 my-[30px] mt-10">
         {/* Geo Chart Component */}
-        <GeoChart />
+        {/* <GeoChart /> */}
         <div className="col-span-2">
           <MostSoldItems />
           <AnalyticsChart />

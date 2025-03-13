@@ -136,7 +136,7 @@ export default function AddCategoryForm({
     useQuery<SubCategoryDataResponse>({
       queryKey: ["allsubcategory"],
       queryFn: async (): Promise<SubCategoryDataResponse> =>
-        fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/subcategories`, {
+        fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/subcategories/all`, {
           method: "GET",
         }).then((res) => res.json() as Promise<SubCategoryDataResponse>),
     });
