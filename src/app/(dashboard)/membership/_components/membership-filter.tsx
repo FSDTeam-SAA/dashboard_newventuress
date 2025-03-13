@@ -21,12 +21,10 @@ const MembershipFilter = ({
   showAdditionalMembership,
   setShowAdditionalMembership,
   tabValue,
-  setTabValue, 
- 
+  setTabValue,
 }: any) => {
   const [show, setShow] = useState<string>("all"); // Default to "all"
   const [date, setDate] = useState<DateRange | undefined>();
-
 
   useEffect(() => {
     if (date) {
@@ -102,8 +100,8 @@ const MembershipFilter = ({
             className=" h-[43px] px-[24px] py-[12px] text-[16px] font-medium leading-[19.2px]"
           >
             {showAdditionalMembership
-              ? "Add Additional List"
-              : "Add Additional"}
+              ? "Additional Plans"
+              : "Add Additional Plans"}
           </Button>
           <Button
             onClick={() => setShowMembership((prev: any) => !prev)}

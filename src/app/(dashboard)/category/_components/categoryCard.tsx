@@ -57,7 +57,10 @@ export function CategoryCard({
             />
             {industry && (
               <Badge variant="default" className="absolute -top-6 -right-6">
-                {industryMap[industry] || industry}
+
+                {industry == "recreational"
+                  ? "RECREATIONAL CANNABIS"
+                  : "HEMP/CBD"}
               </Badge>
             )}
           </div>
