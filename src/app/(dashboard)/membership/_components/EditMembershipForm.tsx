@@ -126,7 +126,7 @@ export default function EditMembershipForm({
     // Otherwise handle submission directly (standalone mode)
     try {
       const response = await fetch(
-        `http://localhost:8001/api/memberships/${id}`,
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/memberships/${id}`,
         {
           method: "PUT",
           headers: {

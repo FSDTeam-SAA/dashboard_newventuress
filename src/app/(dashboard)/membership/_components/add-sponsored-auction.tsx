@@ -77,7 +77,7 @@ const SponsoredAuction = ({
       throw new Error("Unauthorized: No token found");
     }
     const res = await fetch(
-      `http://localhost:8001/api/admin/sponsoredlisting/edit/${id}`,
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/admin/sponsoredlisting/edit/${id}`,
       {
         method: "PUT",
         headers: {
