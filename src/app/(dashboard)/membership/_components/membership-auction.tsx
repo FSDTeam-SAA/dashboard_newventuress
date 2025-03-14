@@ -1,15 +1,13 @@
 "use client";
 
-import { useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   AlertDialog,
+  AlertDialogCancel,
   AlertDialogContent,
-  AlertDialogTitle,
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
-  AlertDialogCancel,
+  AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,11 +16,13 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { MoreHorizontal, MoveRight, Trash2, Edit } from "lucide-react";
-import EmailSendingForm from "./email-sending-form";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Edit, MoreHorizontal, MoveRight, Trash2 } from "lucide-react";
 import { useSession } from "next-auth/react";
+import { useState } from "react";
 import { toast } from "sonner";
 import EditSponsoredListingForm from "./EditMembershipForm";
+import EmailSendingForm from "./email-sending-form";
 
 interface SponsoredListingData {
   _id: string;
@@ -54,7 +54,7 @@ const SponsoredListingAction = ({
       throw new Error("Unauthorized: No token found");
     }
     const res = await fetch(
-      `http://localhost:8001/api/admin/sponsoredlisting/${id}`,
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/admin/sponsoredlisting/${id}`,
       {
         method: "DELETE",
         headers: {
@@ -173,7 +173,7 @@ const SponsoredListingAction = ({
           <AlertDialogContent className="max-w-3xl">
             <AlertDialogHeader>
               <div className="w-full h-[78px] bg-primary rounded-t-[16px] flex items-center justify-between px-[32px]">
-                <p className="text-white text-[32px]">Edit Sponsored Listing</p>
+                <p className="text-white text-[32px]">Edit Membership Plan</p>
               </div>
             </AlertDialogHeader>
             <div>
