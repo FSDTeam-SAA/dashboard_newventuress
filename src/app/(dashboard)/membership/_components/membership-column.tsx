@@ -10,7 +10,7 @@ export const MembershipColumns: ColumnDef<MembershipPlan>[] = [
     cell: ({ row }) => {
       return (
         <div className="bg-primary text-white p-[10px] rounded-[12px] ">
-          {row.original.planType}
+          {row.original.planType?.toUpperCase()}
         </div>
       );
     },
@@ -32,18 +32,20 @@ export const MembershipColumns: ColumnDef<MembershipPlan>[] = [
         <div className="text-[16px] font-normal leading-[19.2px] text-[#444444] space-y-[8px]">
           <p>Auction: {row.original.numberOfAuction}</p>
           <p>Bids: {row.original.numberOfBids}</p>
+          <p>Listing: {row.original?.numberOfListing || "Not Available"}</p>
         </div>
       );
     },
   },
-  {
-    header: "Store",
-    cell: ({ row }) => (
-      <p className="text-gradient text-[18px] leading-[21.6px] font-semibold">
-        {row.original?.store || "No Stote"}
-      </p>
-    ),
-  },
+
+  // {
+  //   header: "Store",
+  //   cell: ({ row }) => (
+  //     <p className="text-gradient text-[18px] leading-[21.6px] font-semibold">
+  //       {row.original?.store || "No Stote"}
+  //     </p>
+  //   ),
+  // },
   {
     id: "actions",
     cell: ({ row }) => (

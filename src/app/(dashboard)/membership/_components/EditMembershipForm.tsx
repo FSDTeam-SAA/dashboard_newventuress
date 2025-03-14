@@ -1,13 +1,14 @@
 "use client";
 
-import { useSession } from "next-auth/react";
 import type React from "react";
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
+import { useSession } from "next-auth/react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -15,33 +16,38 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
+import { useQueryClient } from "@tanstack/react-query";
 
-interface SponsoredListingFormData {
+interface SponsoredListingData {
+  _id: string;
   planTitle: string;
+  planType: string;
   description: string;
   price: number;
   numberOfListing: number;
+  numberOfAuction: number;
+  numberOfBids: number;
 }
 
 interface EditSponsoredListingFormProps {
-  initialData: SponsoredListingFormData;
+  initialData: SponsoredListingData;
   id?: string;
-  onSubmit?: (data: SponsoredListingFormData) => void;
+  onSubmit?: (data: SponsoredListingData) => void;
   isSubmitting?: boolean;
   onCancel: () => void;
 }
 
-export default function EditSponsoredListingForm({
+export default function EditMembershipForm({
   initialData,
   id,
   onSubmit,
   isSubmitting = false,
   onCancel,
 }: EditSponsoredListingFormProps) {
-  const [formData, setFormData] =
-    useState<SponsoredListingFormData>(initialData);
+  const [formData, setFormData] = useState<SponsoredListingData>(initialData);
   const { data: session } = useSession();
+
+  console.log(initialData);
 
   // Update form data when initialData changes
   useEffect(() => {
@@ -49,24 +55,34 @@ export default function EditSponsoredListingForm({
   }, [initialData]);
 
   const handleInputChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
       ...prevData,
       [name]:
-        name === "price" || name === "numberOfListing" ? Number(value) : value,
+        name === "price" ||
+        name === "numberOfListing" ||
+        name === "numberOfAuction" ||
+        name === "numberOfBids"
+          ? Number(value)
+          : value,
     }));
   };
 
+  const handlePlanTypeChange = (value: string) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      planType: value,
+    }));
+  };
+
+  const queryClient = useQueryClient();
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Validate form data
-    if (!formData.planTitle) {
-      toast.error("Plan title is required");
+    if (!formData.planType) {
+      toast.error("Plan type is required");
       return;
     }
 
@@ -85,6 +101,16 @@ export default function EditSponsoredListingForm({
       return;
     }
 
+    if (formData.numberOfAuction < 0) {
+      toast.error("Number of auctions must be a positive number");
+      return;
+    }
+
+    if (formData.numberOfBids < 0) {
+      toast.error("Number of bids must be a positive number");
+      return;
+    }
+
     // Check if user is authenticated
     if (!session?.user?.token) {
       toast.error("You must be logged in to update a sponsored listing");
@@ -100,7 +126,7 @@ export default function EditSponsoredListingForm({
     // Otherwise handle submission directly (standalone mode)
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/admin/sponsoredlisting/edit/${id}`,
+        `http://localhost:8001/api/memberships/${id}`,
         {
           method: "PUT",
           headers: {
@@ -119,6 +145,7 @@ export default function EditSponsoredListingForm({
       }
 
       toast.success("Sponsored listing updated successfully");
+      queryClient.invalidateQueries({ queryKey: ["membership"] });
       onCancel(); // Close the form or navigate back
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "An error occurred");
@@ -127,94 +154,114 @@ export default function EditSponsoredListingForm({
 
   return (
     <form className="grid gap-6" onSubmit={handleSubmit}>
-      <div className="space-y-4">
-        <div>
-          <Label htmlFor="planTitle">Plan Title *</Label>
-          {/* <Input
-            className="h-[50px] mt-2"
-            id="planTitle"
-            name="planTitle"
-            value={formData.planTitle}
-            onChange={handleInputChange}
-            placeholder="Enter plan title"
-            required
-          /> */}
-          <Select
-            value={formData.planTitle}
-            onValueChange={(val) => {
-              setFormData((prevData) => ({
-                ...prevData,
-                planTitle: val,
-              }));
-            }}
-          >
-            <SelectTrigger className="h-[50px]">
-              <SelectValue placeholder="Select Plan" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="basic">Basic</SelectItem>
-              <SelectItem value="standard">Standard</SelectItem>
-              <SelectItem value="premium">Premium</SelectItem>
-            </SelectContent>
-          </Select>
+      <div className="grid md:grid-cols-2 gap-6">
+        <div className="space-y-4">
+          {/* <div>
+            <Label htmlFor="planTitle">Plan Title *</Label>
+            <Input
+              className="h-[50px] mt-2"
+              id="planTitle"
+              name="planTitle"
+              value={formData.planTitle}
+              onChange={handleInputChange}
+              placeholder="Enter plan title"
+              required
+            />
+          </div> */}
+
+          <div>
+            <Label htmlFor="planType">Plan Type *</Label>
+            <Select
+              value={formData.planType}
+              onValueChange={handlePlanTypeChange}
+              required
+            >
+              <SelectTrigger className="h-[50px] mt-2">
+                <SelectValue placeholder="Select plan type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="basic">Basic</SelectItem>
+                <SelectItem value="standard">Standard</SelectItem>
+                <SelectItem value="premium">Premium</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div>
+            <Label htmlFor="description">Description *</Label>
+            <Textarea
+              id="description"
+              name="description"
+              className="mt-2 min-h-[100px]"
+              value={formData.description}
+              onChange={handleInputChange}
+              placeholder="Enter plan description"
+              required
+            />
+          </div>
         </div>
 
-        <div>
-          <Label htmlFor="description">Description *</Label>
-          <Textarea
-            id="description"
-            name="description"
-            className="mt-2 min-h-[100px]"
-            value={formData.description}
-            onChange={handleInputChange}
-            placeholder="Enter plan description"
-            required
-          />
-        </div>
+        <div className="space-y-4">
+          <div>
+            <Label htmlFor="price">Price ($) *</Label>
+            <Input
+              className="h-[50px] mt-2"
+              id="price"
+              name="price"
+              type="number"
+              min="0"
+              step="0.01"
+              required
+              value={formData.price || ""}
+              onChange={handleInputChange}
+              placeholder="0.00"
+            />
+          </div>
 
-        <div>
-          <Label htmlFor="price">Price ($) *</Label>
-          <Input
-            className="h-[50px] mt-2"
-            id="price"
-            name="price"
-            type="number"
-            min="0"
-            step="0.01"
-            required
-            value={formData.price || ""}
-            onChange={handleInputChange}
-            placeholder="0.00"
-          />
-        </div>
+          <div>
+            <Label htmlFor="numberOfAuction">Number of Auctions *</Label>
+            <Input
+              className="h-[50px] mt-2"
+              id="numberOfAuction"
+              name="numberOfAuction"
+              type="number"
+              min="0"
+              required
+              value={formData.numberOfAuction || ""}
+              onChange={handleInputChange}
+              placeholder="0"
+            />
+          </div>
 
-        <div>
-          <Label htmlFor="numberOfListing">Number of Auction *</Label>
-          <Input
-            className="h-[50px] mt-2"
-            id="numberOfListing"
-            name="numberOfListing"
-            type="number"
-            min="1"
-            required
-            value={formData.numberOfListing || ""}
-            onChange={handleInputChange}
-            placeholder="0"
-          />
-        </div>
-        <div>
-          <Label htmlFor="numberOfListing">Number of Bids *</Label>
-          <Input
-            className="h-[50px] mt-2"
-            id="numberOfListing"
-            name="numberOfListing"
-            type="number"
-            min="1"
-            required
-            value={formData.numberOfListing || ""}
-            onChange={handleInputChange}
-            placeholder="0"
-          />
+          <div>
+            <Label htmlFor="numberOfBids">Number of Bids *</Label>
+            <Input
+              className="h-[50px] mt-2"
+              id="numberOfBids"
+              name="numberOfBids"
+              type="number"
+              min="0"
+              required
+              value={formData.numberOfBids || ""}
+              onChange={handleInputChange}
+              placeholder="0"
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="numberOfListing">Number of Listings *</Label>
+            <Input
+              className="h-[50px] mt-2"
+              id="numberOfListing"
+              name="numberOfListing"
+              type="number"
+              min="0"
+              required
+              value={formData.numberOfListing || ""}
+              onChange={handleInputChange}
+              placeholder="0"
+            />
+          </div>
         </div>
       </div>
 
