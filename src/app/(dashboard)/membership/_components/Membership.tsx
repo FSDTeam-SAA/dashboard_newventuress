@@ -7,12 +7,46 @@ import AddSponsoredListing from "./add-sponsored-list";
 import AddSponsoredContainer from "./add-sponsoredContainer";
 
 const Membership = () => {
+  // Main tab state
+  const [tabValue, setTabValue] = useState<string>("membership");
+
+  // Form visibility states
   const [showMembership, setShowMembership] = useState(false);
-  // const [membershipCategory, setmembershipCategory] = useState(false);
   const [showAdditionalMembership, setShowAdditionalMembership] =
     useState(false);
-  const [tabValue, setTabValue] = useState<string>("membership");
-  console.log(tabValue);
+
+  // Handle tab change
+  const handleTabChange = (value: string) => {
+    setTabValue(value);
+
+    // Reset form states when changing tabs to prevent conflicts
+    if (value === "membership") {
+      setShowAdditionalMembership(false);
+    } else {
+      setShowMembership(false);
+    }
+  };
+
+  // Determine what content to show
+  const renderContent = () => {
+    if (showMembership) {
+      return <AddNewMembership setShowMembership={setShowMembership} />;
+    }
+
+    if (showAdditionalMembership) {
+      return (
+        <AddSponsoredListing
+          setShowSponsoredListing={setShowAdditionalMembership}
+        />
+      );
+    }
+
+    return tabValue === "membership" ? (
+      <MembershipContainer />
+    ) : (
+      <AddSponsoredContainer />
+    );
+  };
 
   return (
     <div className="space-y-[30px]">
@@ -21,25 +55,11 @@ const Membership = () => {
         setShowMembership={setShowMembership}
         showAdditionalMembership={showAdditionalMembership}
         setShowAdditionalMembership={setShowAdditionalMembership}
-        tabValue={tabValue} // Pass state
-        setTabValue={setTabValue} // Pass setter function
-        // membershipCategory={membershipCategory}
-        // setmembershipCategory={setmembershipCategory}
+        tabValue={tabValue}
+        setTabValue={handleTabChange}
       />
 
-      {/* Conditionally render based on tabValue */}
-      {showMembership ? (
-        <AddNewMembership setShowMembership={setShowMembership} />
-      ) : showAdditionalMembership ? (
-        <AddSponsoredListing
-          setShowSponsoredListing={setShowAdditionalMembership}
-        />
-      ) : tabValue === "membership" ? (
-        <MembershipContainer />
-      ) : tabValue === "additional" ? (
-        // <div className="text-center text-xl font-bold">Hello World</div>
-        <AddSponsoredContainer />
-      ) : null}
+      {renderContent()}
     </div>
   );
 };

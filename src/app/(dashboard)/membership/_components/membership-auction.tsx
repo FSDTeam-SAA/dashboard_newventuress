@@ -21,15 +21,19 @@ import { Edit, MoreHorizontal, MoveRight, Trash2 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
 import { toast } from "sonner";
-import EditSponsoredListingForm from "./EditMembershipForm";
+
 import EmailSendingForm from "./email-sending-form";
+import EditMembershipForm from "./EditMembershipForm";
 
 interface SponsoredListingData {
   _id: string;
   planTitle: string;
+  planType: string;
   description: string;
   price: number;
   numberOfListing: number;
+  numberOfAuction: number;
+  numberOfBids: number;
 }
 
 interface SponsoredListingActionProps {
@@ -54,7 +58,7 @@ const SponsoredListingAction = ({
       throw new Error("Unauthorized: No token found");
     }
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/admin/sponsoredlisting/${id}`,
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/memberships/${id}`,
       {
         method: "DELETE",
         headers: {
@@ -72,8 +76,8 @@ const SponsoredListingAction = ({
   const deleteMutation = useMutation({
     mutationFn: deleteSponsoredListing,
     onSuccess: () => {
-      toast.success("Sponsored listing deleted successfully!");
-      queryClient.invalidateQueries({ queryKey: ["sponsoredListing"] });
+      toast.success("Membership Plan Deleted Successfully!");
+      queryClient.invalidateQueries({ queryKey: ["membership"] });
       setDeleteOpen(false);
     },
     onError: (error) => {
@@ -148,7 +152,7 @@ const SponsoredListingAction = ({
                 <p className="text-white text-[32px] ">Are you sure?</p>
               </div>
               <AlertDialogDescription className="text-center">
-                This will permanently delete the sponsored listing.
+                This will permanently delete membership listing.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter className="mt-8">
@@ -177,7 +181,7 @@ const SponsoredListingAction = ({
               </div>
             </AlertDialogHeader>
             <div>
-              <EditSponsoredListingForm
+              <EditMembershipForm
                 initialData={initialData}
                 id={id}
                 onCancel={() => setEditOpen(false)}
