@@ -1,13 +1,20 @@
 "use client";
 
-import type React from "react";
-import { useState, useEffect } from "react";
-import { toast } from "sonner";
 import { useSession } from "next-auth/react";
+import type React from "react";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 
 interface SponsoredListingFormData {
@@ -42,7 +49,9 @@ export default function EditSponsoredListingForm({
   }, [initialData]);
 
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
   ) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -91,7 +100,7 @@ export default function EditSponsoredListingForm({
     // Otherwise handle submission directly (standalone mode)
     try {
       const response = await fetch(
-        `http://localhost:8001/api/admin/sponsoredlisting/edit/${id}`,
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/admin/sponsoredlisting/edit/${id}`,
         {
           method: "PUT",
           headers: {
@@ -121,7 +130,7 @@ export default function EditSponsoredListingForm({
       <div className="space-y-4">
         <div>
           <Label htmlFor="planTitle">Plan Title *</Label>
-          <Input
+          {/* <Input
             className="h-[50px] mt-2"
             id="planTitle"
             name="planTitle"
@@ -129,7 +138,25 @@ export default function EditSponsoredListingForm({
             onChange={handleInputChange}
             placeholder="Enter plan title"
             required
-          />
+          /> */}
+          <Select
+            value={formData.planTitle}
+            onValueChange={(val) => {
+              setFormData((prevData) => ({
+                ...prevData,
+                planTitle: val,
+              }));
+            }}
+          >
+            <SelectTrigger className="h-[50px]">
+              <SelectValue placeholder="Select Plan" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="basic">Basic</SelectItem>
+              <SelectItem value="standard">Standard</SelectItem>
+              <SelectItem value="premium">Premium</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
         <div>
@@ -162,7 +189,21 @@ export default function EditSponsoredListingForm({
         </div>
 
         <div>
-          <Label htmlFor="numberOfListing">Number of Listings *</Label>
+          <Label htmlFor="numberOfListing">Number of Auction *</Label>
+          <Input
+            className="h-[50px] mt-2"
+            id="numberOfListing"
+            name="numberOfListing"
+            type="number"
+            min="1"
+            required
+            value={formData.numberOfListing || ""}
+            onChange={handleInputChange}
+            placeholder="0"
+          />
+        </div>
+        <div>
+          <Label htmlFor="numberOfListing">Number of Bids *</Label>
           <Input
             className="h-[50px] mt-2"
             id="numberOfListing"
