@@ -26,6 +26,7 @@ interface MembershipFormData {
   price: number;
   numberOfAuction: number;
   numberOfBids: number;
+  numberOfListing: number;
 }
 
 export default function AddNewMembership({
@@ -43,6 +44,7 @@ export default function AddNewMembership({
     price: 0,
     numberOfAuction: 0,
     numberOfBids: 0,
+    numberOfListing: 0,
   });
 
   const handleInputChange = (
@@ -224,6 +226,21 @@ export default function AddNewMembership({
                     min="0"
                     required
                     value={formData.numberOfBids || ""}
+                    onChange={handleInputChange}
+                    placeholder="0"
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="numberOfListing">Number of Listing *</Label>
+                  <Input
+                    className="h-[50px] mt-2"
+                    id="numberOfListing"
+                    name="numberOfListing"
+                    type="number"
+                    min="0"
+                    required
+                    value={formData.numberOfListing || ""}
                     onChange={handleInputChange}
                     placeholder="0"
                   />

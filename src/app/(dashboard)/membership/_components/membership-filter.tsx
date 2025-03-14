@@ -15,6 +15,15 @@ const showList = [
   { id: 3, name: "Expired", value: "expired" },
 ];
 
+interface MembershipFilterProps {
+  showMembership: boolean;
+  setShowMembership: (value: boolean) => void;
+  showAdditionalMembership: boolean;
+  setShowAdditionalMembership: (value: boolean) => void;
+  tabValue: string;
+  setTabValue: (value: string) => void;
+}
+
 const MembershipFilter = ({
   showMembership,
   setShowMembership,
@@ -22,7 +31,7 @@ const MembershipFilter = ({
   setShowAdditionalMembership,
   tabValue,
   setTabValue,
-}: any) => {
+}: MembershipFilterProps) => {
   const [show, setShow] = useState<string>("all"); // Default to "all"
   const [date, setDate] = useState<DateRange | undefined>();
 
@@ -46,6 +55,38 @@ const MembershipFilter = ({
       return format(range.from, "LLL dd, y");
     }
     return "Pick a date range";
+  };
+
+  // Handle membership button click based on current tab and state
+  const handleMembershipButtonClick = () => {
+    if (tabValue === "membership") {
+      setShowMembership(!showMembership);
+      // If opening membership form, ensure additional form is closed
+      if (!showMembership) {
+        setShowAdditionalMembership(false);
+      }
+    } else {
+      // If on additional tab, switch to membership tab and open form
+      setTabValue("membership");
+      setShowMembership(true);
+      setShowAdditionalMembership(false);
+    }
+  };
+
+  // Handle additional button click based on current tab and state
+  const handleAdditionalButtonClick = () => {
+    if (tabValue === "additional") {
+      setShowAdditionalMembership(!showAdditionalMembership);
+      // If opening additional form, ensure membership form is closed
+      if (!showAdditionalMembership) {
+        setShowMembership(false);
+      }
+    } else {
+      // If on membership tab, switch to additional tab and open form
+      setTabValue("additional");
+      setShowAdditionalMembership(true);
+      setShowMembership(false);
+    }
   };
 
   return (
@@ -96,18 +137,18 @@ const MembershipFilter = ({
       <div>
         <div className="flex gap-x-[12px]">
           <Button
-            onClick={() => setShowAdditionalMembership((prev: any) => !prev)}
-            className=" h-[43px] px-[24px] py-[12px] text-[16px] font-medium leading-[19.2px]"
+            onClick={handleAdditionalButtonClick}
+            className="h-[43px] px-[24px] py-[12px] text-[16px] font-medium leading-[19.2px]"
           >
             {showAdditionalMembership
-              ? "Additional Plans"
-              : "Add Additional Plans"}
+              ? "View Additional List"
+              : "Add Additional Plan"}
           </Button>
           <Button
-            onClick={() => setShowMembership((prev: any) => !prev)}
-            className=" h-[43px] px-[24px] py-[12px] text-[16px] font-medium leading-[19.2px]"
+            onClick={handleMembershipButtonClick}
+            className="h-[43px] px-[24px] py-[12px] text-[16px] font-medium leading-[19.2px]"
           >
-            {showMembership ? "Add New Membership List" : "New Membership List"}
+            {showMembership ? "View Membership List" : "Add Membership Plan"}
           </Button>
         </div>
       </div>
@@ -116,5 +157,3 @@ const MembershipFilter = ({
 };
 
 export default MembershipFilter;
-
-// Generic Dropdown Component

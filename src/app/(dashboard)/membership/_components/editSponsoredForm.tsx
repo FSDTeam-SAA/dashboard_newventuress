@@ -2,10 +2,8 @@
 
 import type React from "react";
 
-import { useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
-import { useSession } from "next-auth/react";
 
 import { Button } from "@/components/ui/button";
 import { CardContent } from "@/components/ui/card";
@@ -13,28 +11,41 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 
-interface SponsoredListingFormData {
+interface SponsoredListingData {
+  id: string;
   planTitle: string;
   description: string;
   price: number;
   numberOfListing: number;
 }
 
-export default function AddSponsoredListing({
-  setShowSponsoredListing,
-}: {
-  setShowSponsoredListing: React.Dispatch<React.SetStateAction<boolean>>;
-}) {
-  const [isLoading, setIsLoading] = useState(false);
-  const queryClient = useQueryClient();
-  const { data: session } = useSession();
+interface EditSponsoredFormProps {
+  initialData: SponsoredListingData;
+  onSubmit: (data: SponsoredListingData) => void;
+  isSubmitting: boolean;
+  onCancel: () => void;
+}
 
-  const [formData, setFormData] = useState<SponsoredListingFormData>({
+export default function EditSponsoredForm({
+  initialData,
+  onSubmit,
+  isSubmitting,
+  onCancel,
+}: EditSponsoredFormProps) {
+  const [formData, setFormData] = useState<SponsoredListingData>({
+    id: "",
     planTitle: "",
     description: "",
     price: 0,
     numberOfListing: 0,
   });
+
+  // Initialize form with initial data when component mounts or initialData changes
+  useEffect(() => {
+    if (initialData) {
+      setFormData(initialData);
+    }
+  }, [initialData]);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -46,47 +57,6 @@ export default function AddSponsoredListing({
         name === "price" || name === "numberOfListing" ? Number(value) : value,
     }));
   };
-
-  const createSponsoredListingMutation = useMutation({
-    mutationFn: async (data: SponsoredListingFormData) => {
-      // Prepare headers with authentication token from session
-      const headers: HeadersInit = {
-        "Content-Type": "application/json",
-      };
-
-      // Add authorization header if session token exists
-      if (session?.user?.token) {
-        headers.Authorization = `Bearer ${session.user.token}`;
-      }
-
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/admin/sponsoredlisting/create`,
-        {
-          method: "POST",
-          headers,
-          body: JSON.stringify(data),
-        }
-      );
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(
-          errorData.message || "Failed to create sponsored listing"
-        );
-      }
-
-      return response.json();
-    },
-    onSuccess: () => {
-      toast.success("Sponsored listing created successfully!");
-      queryClient.invalidateQueries({ queryKey: ["sponsoredListings"] });
-      setShowSponsoredListing(false);
-    },
-    onError: (error: Error) => {
-      toast.error(`Error: ${error.message}`);
-      console.error("Sponsored listing creation error:", error);
-    },
-  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -111,27 +81,11 @@ export default function AddSponsoredListing({
       return;
     }
 
-    // Check if user is authenticated
-    if (!session?.user?.token) {
-      toast.error("You must be logged in to create a sponsored listing");
-      return;
-    }
-
-    setIsLoading(true);
-    try {
-      await createSponsoredListingMutation.mutateAsync(formData);
-    } finally {
-      setIsLoading(false);
-    }
+    onSubmit(formData);
   };
 
   return (
     <div className="bg-white rounded-2xl">
-      <div className="rounded-t-3xl bg-primary px-[32px] py-4">
-        <h1 className="text-[28px] font-semibold text-white">
-          Add Sponsored Listing
-        </h1>
-      </div>
       <div className="mt-4">
         <CardContent className="p-6">
           <form className="grid gap-6" onSubmit={handleSubmit}>
@@ -203,17 +157,17 @@ export default function AddSponsoredListing({
                   <Button
                     type="button"
                     variant="outline"
-                    onClick={() => setShowSponsoredListing(false)}
-                    disabled={isLoading}
+                    onClick={onCancel}
+                    disabled={isSubmitting}
                   >
                     Cancel
                   </Button>
                   <Button
                     type="submit"
                     className="bg-primary hover:bg-primary/90"
-                    disabled={isLoading}
+                    disabled={isSubmitting}
                   >
-                    {isLoading ? "Creating..." : "Create Sponsored Listing"}
+                    {isSubmitting ? "Saving..." : "Save Changes"}
                   </Button>
                 </div>
               </div>
