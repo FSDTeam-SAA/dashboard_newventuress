@@ -8,18 +8,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
-import type { SubCategoryDataResponse } from "@/data/subCategory";
-import { useQuery } from "@tanstack/react-query";
-import { ImageIcon, Trash2, X } from "lucide-react";
+import { ImageIcon, Trash2 } from "lucide-react";
 import Image from "next/image";
 import { useState, useRef } from "react";
 import { toast } from "sonner";
-
-interface SelectedSubCategory {
-  id: string;
-  name: string;
-}
 
 export default function AddCategoryForm({
   setShowCategory,
@@ -33,18 +25,11 @@ export default function AddCategoryForm({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [selectedFileName, setSelectedFileName] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
-
-  // Track multiple selected subcategories
-  const [selectedSubCategories, setSelectedSubCategories] = useState<
-    SelectedSubCategory[]
-  >([]);
 
   const [formData, setFormData] = useState({
     categoryName: "",
     description: "",
-    industry: "cbd", // Default to CBD
-    subCategory: "", // This will hold the comma-separated string of subcategory IDs
+    industry: "",
   });
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -132,56 +117,6 @@ export default function AddCategoryForm({
     }));
   };
 
-  const { data, isLoading: isLoadingSubcategories } =
-    useQuery<SubCategoryDataResponse>({
-      queryKey: ["allsubcategory"],
-      queryFn: async (): Promise<SubCategoryDataResponse> =>
-        fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/subcategories/all`, {
-          method: "GET",
-        }).then((res) => res.json() as Promise<SubCategoryDataResponse>),
-    });
-
-  // Handle selecting a subcategory
-  const handleSelect = (item: { _id: string; subCategoryName: string }) => {
-    const isAlreadySelected = selectedSubCategories.some(
-      (subCat) => subCat.id === item._id
-    );
-
-    if (!isAlreadySelected) {
-      const updatedSubCategories = [
-        ...selectedSubCategories,
-        { id: item._id, name: item.subCategoryName },
-      ];
-      setSelectedSubCategories(updatedSubCategories);
-
-      // Update formData with the new comma-separated string of subcategory IDs
-      const subCategoryIds = updatedSubCategories
-        .map((subCat) => subCat.id)
-        .join(", ");
-      setFormData((prevData) => ({
-        ...prevData,
-        subCategory: subCategoryIds,
-      }));
-    }
-  };
-
-  // Remove a subcategory from selection
-  const handleRemoveSubCategory = (id: string) => {
-    const updatedSubCategories = selectedSubCategories.filter(
-      (subCat) => subCat.id !== id
-    );
-    setSelectedSubCategories(updatedSubCategories);
-
-    // Update formData with the new comma-separated string of subcategory IDs
-    const subCategoryIds = updatedSubCategories
-      .map((subCat) => subCat.id)
-      .join(", ");
-    setFormData((prevData) => ({
-      ...prevData,
-      subCategory: subCategoryIds,
-    }));
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -190,8 +125,8 @@ export default function AddCategoryForm({
       return;
     }
 
-    if (selectedSubCategories.length === 0) {
-      toast.error("Please select at least one subcategory");
+    if (!formData.industry) {
+      toast.error("Industry is required");
       return;
     }
 
@@ -209,12 +144,6 @@ export default function AddCategoryForm({
 
     formDataToSubmit.append("shortDescription", formData.description);
     formDataToSubmit.append("industry", formData.industry);
-
-    // Create comma-separated string of subcategory IDs without spaces
-    const subCategoriesString = selectedSubCategories
-      .map((subCat) => subCat.id)
-      .join(",");
-    formDataToSubmit.append("subCategories", subCategoriesString);
 
     try {
       const response = await fetch(
@@ -269,92 +198,6 @@ export default function AddCategoryForm({
                 </div>
 
                 <div>
-                  <Label>Sub Categories *</Label>
-                  <div className="relative inline-block text-left w-full border-[1px] border-[#B0B0B0]/50 py-2 rounded-[8px] mt-2">
-                    <button
-                      onClick={(e) => {
-                        e.preventDefault();
-                        setIsOpen(!isOpen);
-                      }}
-                      className="font-medium rounded-lg text-sm text-[#444444] px-2 py-2.5 text-center inline-flex justify-between items-center w-full"
-                      type="button"
-                    >
-                      {isLoadingSubcategories
-                        ? "Loading subcategories..."
-                        : "Select Sub Categories"}
-                      <svg
-                        className="w-2.5 h-2.5 ms-3"
-                        aria-hidden="true"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 10 6"
-                      >
-                        <path
-                          stroke="currentColor"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="m1 1 4 4 4-4"
-                        />
-                      </svg>
-                    </button>
-
-                    {isOpen && (
-                      <div className="absolute z-10 mt-2 bg-white divide-y divide-gray-100 rounded-lg w-full shadow-md cursor-pointer">
-                        <ul className="py-2 text-sm text-gray-700 max-h-60 overflow-y-auto">
-                          {data && data.data && Array.isArray(data.data) ? (
-                            data.data.map((item) => (
-                              <li key={item._id}>
-                                <p
-                                  onClick={() => handleSelect(item)}
-                                  className={`w-full text-left px-4 py-2 hover:bg-gray-100 ${
-                                    selectedSubCategories.some(
-                                      (subCat) => subCat.id === item._id
-                                    )
-                                      ? "bg-primary text-white font-medium"
-                                      : ""
-                                  }`}
-                                >
-                                  {item.subCategoryName}
-                                </p>
-                              </li>
-                            ))
-                          ) : (
-                            <li>
-                              <p className="w-full text-left px-4 py-2 text-gray-500">
-                                No subcategories available
-                              </p>
-                            </li>
-                          )}
-                        </ul>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Selected subcategories badges */}
-                  {selectedSubCategories.length > 0 && (
-                    <div className="flex flex-wrap gap-2 mt-2">
-                      {selectedSubCategories.map((subCat) => (
-                        <Badge
-                          key={subCat.id}
-                          variant="secondary"
-                          className="px-2 py-1 flex items-center gap-1 bg-primary text-white"
-                        >
-                          {subCat.name}
-                          <button
-                            type="button"
-                            onClick={() => handleRemoveSubCategory(subCat.id)}
-                            className=" hover:text-red-700 focus:outline-none"
-                          >
-                            <X className="h-3 w-3" />
-                          </button>
-                        </Badge>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-                <div>
                   <Label htmlFor="description">Short Description</Label>
                   <Textarea
                     id="description"
@@ -368,6 +211,7 @@ export default function AddCategoryForm({
                 <div className="space-y-2">
                   <Label>Industry *</Label>
                   <RadioGroup
+                    required
                     value={formData.industry}
                     onValueChange={handleRadioChange}
                     className="flex items-center space-x-4 mt-2"

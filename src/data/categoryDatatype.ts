@@ -29,3 +29,16 @@ export interface categoryDataResponse {
   data: categoryDataType[];
   meta: metaPagination;
 }
+
+export interface SubCategoryDataType {
+  subCategoryName: string;
+  _id: string;
+  categoryName: string;
+  title: string;
+  image: string;
+  categoryID: string[];
+  shortDescription: string;
+  industry: string;
+  __v: number;
+  categoryStatement: categoryStatement[];
+}

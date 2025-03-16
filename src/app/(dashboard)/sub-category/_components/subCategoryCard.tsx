@@ -4,38 +4,102 @@
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
-
 import { useState } from "react";
 import Modal from "@/components/shared/modal/modal";
 import { Badge } from "@/components/ui/badge";
 import EditSubCategory from "./EditSubCategory";
-// import EditSubCategory from "../../sub-category/_components/EditSubCategory";
+import { useQuery } from "@tanstack/react-query";
+
+interface Category {
+  _id: string;
+  categoryName: string;
+  image: string;
+  shortDescription: string;
+  industry: string;
+  subCategory: string[];
+  __v: number;
+}
+
+interface CategoryResponse {
+  status: boolean;
+  message: string;
+  data: Category[];
+  meta: {
+    currentPage: number;
+    totalPages: number;
+    totalItems: number;
+    itemsPerPage: number;
+  };
+}
 
 interface CategoryCardProps {
-  categoryId: string;
+  categoryId: any;
   title: string;
   imageUrl: string;
   description: string;
-  slug: string;
   industry?: string;
-  // subCategory: number
   onDelete: () => void;
+  categoryName?: string;
 }
 
 export function SubCategoryCard({
   title,
   imageUrl,
   onDelete,
-  description,
   categoryId,
-  industry,
 }: CategoryCardProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isOpenEditModal, setIsOpenEditModal] = useState(false);
 
+  console.log("categoryId:", categoryId);
+  // Fetch categories data
+  const { data: categoriesResponse, isLoading } = useQuery<CategoryResponse>({
+    queryKey: ["categories"],
+    queryFn: async () => {
+      console.log("Fetching categories...");
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/categories`,
+        {
+          headers: {
+            Authorization: `Bearer ${process.env.NEXT_PUBLIC_API_TOKEN}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch categories");
+      }
+
+      const data = await response.json();
+      console.log("Categories data:", data);
+      return data;
+    },
+  });
+
+  // Find category name by ID
+  const getCategoryName = () => {
+    if (isLoading) return "Loading...";
+    if (
+      !categoriesResponse?.data ||
+      !Array.isArray(categoriesResponse.data) ||
+      categoriesResponse.data.length === 0
+    )
+      return "No data";
+
+    console.log("Sub Category ID to find:", categoryId);
+    console.log("Available categories:", categoriesResponse.data);
+
+    const category = categoriesResponse.data.find(
+      (cat) => String(cat._id) === String(categoryId)
+    );
+
+    console.log("Found category:", category);
+
+    return category ? category.categoryName : "Unknown";
+  };
+
   const handleModal = () => setIsOpen(true);
   const handleCategoryEditModal = () => setIsOpenEditModal(true);
-  // console.log(description);
 
   return (
     <div>
@@ -43,14 +107,17 @@ export function SubCategoryCard({
         <CardContent className="pt-4">
           <div className="aspect-square relative mb-3">
             <Image
-              src={imageUrl}
-              alt={imageUrl}
+              src={imageUrl || "/placeholder.svg"}
+              alt={title}
               fill
               className="object-cover w-[306px] h-[270px] rounded-xl"
             />
-            {industry && (
-              <Badge variant="default" className="absolute -top-6 -right-6">
-                {industry}
+            {categoryId && (
+              <Badge
+                variant="default"
+                className="absolute -top-2 -right-2 bg-primary text-white px-2 py-1"
+              >
+                {getCategoryName()}
               </Badge>
             )}
           </div>

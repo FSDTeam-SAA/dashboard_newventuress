@@ -2,7 +2,7 @@
 import { useState } from "react";
 import PacificPagination from "@/components/ui/PacificPagination";
 
-import { categoryDataType } from "@/data/categoryDatatype";
+import { categoryDataType, SubCategoryDataType } from "@/data/categoryDatatype";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import NotFound from "@/components/shared/NotFound/NotFound";
@@ -96,7 +96,7 @@ export default function SubCategorList() {
   } else {
     content = (
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {data?.data.map((category: categoryDataType) => (
+        {data?.data.map((category: SubCategoryDataType) => (
           <SubCategoryCard
             key={category._id}
             title={category.subCategoryName}
@@ -106,8 +106,8 @@ export default function SubCategorList() {
                 : category.image
             }
             description={category.shortDescription}
-            slug={category.slug}
-            categoryId={category._id}
+            categoryId={category.categoryID}
+            categoryName={category.categoryName}
             onDelete={() => handleDelete(category._id)}
           />
         ))}
