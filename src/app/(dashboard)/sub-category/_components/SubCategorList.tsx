@@ -102,11 +102,12 @@ export default function SubCategorList() {
             title={category.subCategoryName}
             imageUrl={
               category.image === ""
-                ? "https://i.ibb.co.com/0pNZVVHX/image.png"
+                ? "https://images.pexels.com/photos/28216688/pexels-photo-28216688/free-photo-of-autumn-camping.png?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
                 : category.image
             }
             description={category.shortDescription}
             categoryId={category.categoryID}
+            subCategoryId={category._id}
             categoryName={category.categoryName}
             onDelete={() => handleDelete(category._id)}
           />

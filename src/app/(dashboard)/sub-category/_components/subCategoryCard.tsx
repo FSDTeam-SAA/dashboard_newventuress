@@ -32,9 +32,10 @@ interface CategoryResponse {
   };
 }
 
-interface CategoryCardProps {
+interface SubCategoryCardProps {
   categoryId: any;
   title: string;
+  subCategoryId: string;
   imageUrl: string;
   description: string;
   industry?: string;
@@ -47,16 +48,17 @@ export function SubCategoryCard({
   imageUrl,
   onDelete,
   categoryId,
-}: CategoryCardProps) {
+  subCategoryId,
+}: SubCategoryCardProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isOpenEditModal, setIsOpenEditModal] = useState(false);
 
-  console.log("categoryId:", categoryId);
+  // console.log("categoryId:", categoryId);
   // Fetch categories data
   const { data: categoriesResponse, isLoading } = useQuery<CategoryResponse>({
     queryKey: ["categories"],
     queryFn: async () => {
-      console.log("Fetching categories...");
+      // console.log("Fetching categories...");
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/categories`,
         {
@@ -71,7 +73,7 @@ export function SubCategoryCard({
       }
 
       const data = await response.json();
-      console.log("Categories data:", data);
+      // console.log("Categories data:", data);
       return data;
     },
   });
@@ -86,14 +88,14 @@ export function SubCategoryCard({
     )
       return "No data";
 
-    console.log("Sub Category ID to find:", categoryId);
-    console.log("Available categories:", categoriesResponse.data);
+    // console.log("Sub Category ID to find:", categoryId);
+    // console.log("Available categories:", categoriesResponse.data);
 
     const category = categoriesResponse.data.find(
       (cat) => String(cat._id) === String(categoryId)
     );
 
-    console.log("Found category:", category);
+    // console.log("Found category:", category);
 
     return category ? category.categoryName : "Unknown";
   };
@@ -194,7 +196,7 @@ export function SubCategoryCard({
             <div className="absolute inset-0 z-0 bg-[url('/assets/img/modalbg.png')] bg-no-repeat bg-cover rounded-[16px] opacity-50" />
             <div className="relative z-10">
               <EditSubCategory
-                subcategoryId={categoryId}
+                subCategoryId={subCategoryId}
                 setShowEditForm={setIsOpenEditModal}
                 onSuccess={() => {
                   setIsOpenEditModal(false);
