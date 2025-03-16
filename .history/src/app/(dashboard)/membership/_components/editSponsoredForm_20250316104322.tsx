@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 
 interface SponsoredListingData {
-  _id: string;
+  id: string;
   planTitle: string;
   description: string;
   price: number;

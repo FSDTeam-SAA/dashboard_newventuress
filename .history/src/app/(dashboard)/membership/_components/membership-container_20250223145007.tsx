@@ -12,32 +12,29 @@ import {
 // Local imports
 import { DataTable } from "@/components/ui/data-table";
 import PacificPagination from "@/components/ui/PacificPagination";
+import { MembershipColumns } from "./membership-column";
+import { MembershipPlan, MembershipResponse } from "@/types/membership";
 import NotFound from "@/components/shared/NotFound/NotFound";
 import ErrorContainer from "@/components/shared/ErrorContainer/ErrorContainer";
 import TableSkeletonWrapper from "@/components/shared/TableSkeletonWrapper/TableSkeletonWrapper";
-import { SponsorshipData, SponsorshipResponse } from "@/types/sponsoData";
-import { SponsorshipColumns } from "./add-sponsorColumn";
 
-const AddSponsoredContainer = () => {
+const MembershipContainer = () => {
   const [currentPage, setCurrentpage] = useState(1);
 
   const session = useSession();
   const token = session.data?.user.token;
   console.log({ token });
 
-  const { data, isError, isLoading, error } = useQuery<SponsorshipResponse>({
+  const { data, isError, isLoading, error } = useQuery<MembershipResponse>({
     queryKey: ["membership"],
     queryFn: () =>
-      fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/admin/sponsoredlisting/get`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      ).then((res) => res.json()),
+      fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/memberships`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }).then((res) => res.json()),
   });
 
   console.log("response data:", data);
@@ -47,12 +44,7 @@ const AddSponsoredContainer = () => {
   if (isLoading) {
     content = (
       <div className="w-full">
-        <TableSkeletonWrapper
-          count={5}
-          width="100%"
-          height="120px"
-          className="bg-white"
-        />
+        <TableSkeletonWrapper count={5} width="100%" height="120px" className="bg-white"/>
       </div>
     );
   } else if (isError) {
@@ -66,7 +58,7 @@ const AddSponsoredContainer = () => {
       <NotFound message="Oops! No data available. Modify your filters or check your internet connection." />
     );
   } else if (data && data.data && data.data.length > 0) {
-    content = <TableContainer columns={SponsorshipColumns} data={data.data} />;
+    content = <TableContainer columns={MembershipColumns} data={data.data} />;
   }
   return (
     <div>
@@ -89,14 +81,14 @@ const AddSponsoredContainer = () => {
   );
 };
 
-export default AddSponsoredContainer;
+export default MembershipContainer;
 
 const TableContainer = ({
   data,
   columns,
 }: {
   data: any[];
-  columns: ColumnDef<SponsorshipData>[];
+  columns: ColumnDef<MembershipPlan>[];
 }) => {
   const table = useReactTable({
     data,
@@ -105,7 +97,7 @@ const TableContainer = ({
   });
   return (
     <>
-      <DataTable table={table} columns={columns} title="Sponsored Plan List" />
+      <DataTable table={table} columns={columns} title="Membership List" />
     </>
   );
 };

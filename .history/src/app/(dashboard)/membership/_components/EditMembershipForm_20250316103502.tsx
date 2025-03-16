@@ -144,7 +144,7 @@ export default function EditMembershipForm({
         );
       }
 
-      toast.success("Membership Plan Updated Successfully");
+      toast.success("updated successfully");
       queryClient.invalidateQueries({ queryKey: ["membership"] });
       onCancel(); // Close the form or navigate back
     } catch (error) {

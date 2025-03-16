@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 
 interface SponsoredListingData {
-  _id: string;
+  id: string;
   planTitle: string;
   description: string;
   price: number;
@@ -33,7 +33,7 @@ export default function EditSponsoredForm({
   onCancel,
 }: EditSponsoredFormProps) {
   const [formData, setFormData] = useState<SponsoredListingData>({
-    _id: "",
+    id: "",
     planTitle: "",
     description: "",
     price: 0,

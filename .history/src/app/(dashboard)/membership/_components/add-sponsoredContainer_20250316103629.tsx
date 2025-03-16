@@ -105,7 +105,7 @@ const TableContainer = ({
   });
   return (
     <>
-      <DataTable table={table} columns={columns} title="Sponsored Plan List" />
+      <DataTable table={table} columns={columns} title="Sponsored plan List" />
     </>
   );
 };
