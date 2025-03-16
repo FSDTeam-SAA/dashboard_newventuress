@@ -8,19 +8,12 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
-import { ImageIcon, X } from "lucide-react";
+import { ImageIcon } from "lucide-react";
 import Image from "next/image";
 import { TiEdit } from "react-icons/ti";
 import { useSession } from "next-auth/react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import type { SubCategoryDataResponse } from "@/data/subCategory";
 import { toast } from "sonner";
-
-interface SelectedSubCategory {
-  _id: string;
-  name: string;
-}
 
 interface CategoryCardProps {
   categoryId: string;
@@ -37,10 +30,6 @@ export function EditCategory({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const session = useSession();
   const token = session.data?.user?.token;
-  const [isOpen, setIsOpen] = useState(false);
-  const [selectedSubCategories, setSelectedSubCategories] = useState<
-    SelectedSubCategory[]
-  >([]);
   const [isLoading, setIsLoading] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -74,17 +63,7 @@ export function EditCategory({
   });
   const categoryData = data?.data;
 
-  // Fetch all subcategories
-  const { data: subCategoriesData, isLoading: isLoadingSubcategories } =
-    useQuery<SubCategoryDataResponse>({
-      queryKey: ["allsubcategory"],
-      queryFn: async (): Promise<SubCategoryDataResponse> =>
-        fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/subcategories`, {
-          method: "GET",
-        }).then((res) => res.json() as Promise<SubCategoryDataResponse>),
-    });
-
-  // Initialize form data and the selected subcategories when category data is fetched
+  // Initialize form data when category data is fetched
   useEffect(() => {
     if (categoryData) {
       setFormData({
@@ -93,26 +72,8 @@ export function EditCategory({
         industry: categoryData.industry || "cbd",
       });
       setImagePreview(categoryData.image);
-
-      if (
-        subCategoriesData &&
-        subCategoriesData.data &&
-        categoryData.subCategory
-      ) {
-        const subCategoryArray = Array.isArray(categoryData.subCategory)
-          ? categoryData.subCategory
-          : [categoryData.subCategory];
-
-        const initialSelected = subCategoriesData.data
-          .filter((item) => subCategoryArray.includes(item._id))
-          .map((item) => ({
-            _id: item._id,
-            name: item.subCategoryName,
-          }));
-        setSelectedSubCategories(initialSelected);
-      }
     }
-  }, [categoryData, subCategoriesData]);
+  }, [categoryData]);
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
@@ -176,31 +137,11 @@ export function EditCategory({
     }));
   };
 
-  const handleSelect = (item: { _id: string; subCategoryName: string }) => {
-    if (!selectedSubCategories.some((subCat) => subCat._id === item._id)) {
-      setSelectedSubCategories((prev) => [
-        ...prev,
-        { _id: item._id, name: item.subCategoryName },
-      ]);
-    }
-  };
-
-  const handleRemoveSubCategory = (id: string) => {
-    setSelectedSubCategories((prev) =>
-      prev.filter((subCat) => subCat._id !== id)
-    );
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!formData.categoryName) {
       toast.error("Category name is required");
-      return;
-    }
-
-    if (selectedSubCategories.length === 0) {
-      toast.error("Please select at least one subcategory");
       return;
     }
 
@@ -212,7 +153,6 @@ export function EditCategory({
         categoryName: formData.categoryName,
         shortDescription: formData.shortDescription,
         industry: formData.industry,
-        subCategory: selectedSubCategories.map((sc) => sc._id),
         hasImage: !!selectedFile,
       });
 
@@ -225,17 +165,6 @@ export function EditCategory({
       }
 
       formDataToSubmit.append("industry", formData.industry);
-
-      // For subCategory, try different formats based on what the API might expect
-      if (selectedSubCategories.length === 1) {
-        // If only one subcategory, send it as a single value
-        formDataToSubmit.append("subCategory", selectedSubCategories[0]._id);
-      } else {
-        // If multiple subcategories, try an array format
-        selectedSubCategories.forEach((subCat, index) => {
-          formDataToSubmit.append(`subCategory[${index}]`, subCat._id);
-        });
-      }
 
       if (selectedFile) {
         formDataToSubmit.append("image", selectedFile);
@@ -311,93 +240,6 @@ export function EditCategory({
                     required
                     className="h-[51px] border border-[#B0B0B0]"
                   />
-                </div>
-
-                <div className="space-y-2">
-                  <Label>
-                    Sub Categories <span className="text-red-500">*</span>
-                  </Label>
-                  <div className="relative inline-block text-left w-full border-[1px] border-[#B0B0B0] py-2 rounded-[8px]">
-                    <button
-                      onClick={(e) => {
-                        e.preventDefault();
-                        setIsOpen(!isOpen);
-                      }}
-                      className="font-medium rounded-lg text-sm text-[#444444] px-2 py-2.5 text-center inline-flex justify-between items-center w-full"
-                      type="button"
-                    >
-                      {isLoadingSubcategories
-                        ? "Loading subcategories..."
-                        : "Select Sub Categories"}
-                      <svg
-                        className="w-2.5 h-2.5 ms-3"
-                        aria-hidden="true"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 10 6"
-                      >
-                        <path
-                          stroke="currentColor"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="m1 1 4 4 4-4"
-                        />
-                      </svg>
-                    </button>
-
-                    {isOpen && (
-                      <div className="absolute z-10 mt-2 bg-white divide-y divide-gray-100 rounded-lg w-full shadow-md cursor-pointer">
-                        <ul className="py-2 text-sm text-gray-700 max-h-60 overflow-y-auto">
-                          {subCategoriesData &&
-                          subCategoriesData.data &&
-                          Array.isArray(subCategoriesData.data) ? (
-                            subCategoriesData.data.map((item) => (
-                              <li key={item._id}>
-                                <p
-                                  onClick={() => handleSelect(item)}
-                                  className={`w-full text-left px-4 py-2 hover:bg-gray-100 ${
-                                    selectedSubCategories.some(
-                                      (sc) => sc._id === item._id
-                                    )
-                                      ? "bg-primary text-white font-medium "
-                                      : ""
-                                  }`}
-                                >
-                                  {item.subCategoryName}
-                                </p>
-                              </li>
-                            ))
-                          ) : (
-                            <li>
-                              <p className="w-full text-left px-4 py-2 text-gray-500">
-                                No subcategories available
-                              </p>
-                            </li>
-                          )}
-                        </ul>
-                      </div>
-                    )}
-                  </div>
-                  {/* Display selected subcategories */}
-                  <div className="flex flex-wrap gap-2 mt-2">
-                    {selectedSubCategories.map((subCat) => (
-                      <Badge
-                        key={subCat._id}
-                        variant="secondary"
-                        className="px-2 py-1 flex items-center gap-1 bg-primary text-white"
-                      >
-                        {subCat.name}
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveSubCategory(subCat._id)}
-                          className="text-gray-500 hover:text-gray-700 focus:outline-none"
-                        >
-                          <X className="h-3 w-3 text-red-500" />
-                        </button>
-                      </Badge>
-                    ))}
-                  </div>
                 </div>
 
                 <div className="space-y-2">

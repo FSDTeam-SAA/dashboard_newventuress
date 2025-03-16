@@ -14,13 +14,13 @@ import { useSession } from "next-auth/react";
 import { useQueryClient } from "@tanstack/react-query";
 
 interface EditSubCategoryProps {
-  subcategoryId: string;
+  subCategoryId: string;
   setShowEditForm: React.Dispatch<React.SetStateAction<boolean>>;
   onSuccess?: () => void;
 }
 
 export default function EditSubCategory({
-  subcategoryId,
+  subCategoryId,
   setShowEditForm,
   onSuccess,
 }: EditSubCategoryProps) {
@@ -45,7 +45,7 @@ export default function EditSubCategory({
     const fetchSubcategoryData = async () => {
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/subcategories/single/${subcategoryId}`
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/subcategories/single/${subCategoryId}`
         );
 
         if (!response.ok) {
@@ -74,7 +74,7 @@ export default function EditSubCategory({
     };
 
     fetchSubcategoryData();
-  }, [subcategoryId]);
+  }, [subCategoryId]);
 
   const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -118,7 +118,7 @@ export default function EditSubCategory({
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/subcategories/${subcategoryId}`,
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/subcategories/${subCategoryId}`,
         {
           method: "PUT",
           headers: {

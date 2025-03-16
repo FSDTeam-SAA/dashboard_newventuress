@@ -106,7 +106,7 @@ const SponsoredAuction = ({
   });
 
   const handleEditSubmit = (updatedData: any) => {
-    toast.success("Sponsored Plan Updated Successfully!");
+    toast.success("Membership plan updated successfully!");
     editMutation.mutate(updatedData);
   };
 
@@ -201,7 +201,7 @@ const SponsoredAuction = ({
           <AlertDialogContent className="max-w-3xl">
             <AlertDialogHeader>
               <div className="w-full h-[78px] bg-primary rounded-t-[16px] flex items-center justify-between px-[32px]">
-                <p className="text-white text-[32px]">Edit Sponsored Plan</p>
+                <p className="text-white text-[32px]">Edit Sponsors Plan</p>
               </div>
             </AlertDialogHeader>
             <div>

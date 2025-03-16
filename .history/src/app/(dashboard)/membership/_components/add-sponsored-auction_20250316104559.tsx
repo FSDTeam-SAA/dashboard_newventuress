@@ -106,7 +106,7 @@ const SponsoredAuction = ({
   });
 
   const handleEditSubmit = (updatedData: any) => {
-    toast.success("Sponsored Plan Updated Successfully!");
+    toast.success("Sponspdated successfully!");
     editMutation.mutate(updatedData);
   };
 
