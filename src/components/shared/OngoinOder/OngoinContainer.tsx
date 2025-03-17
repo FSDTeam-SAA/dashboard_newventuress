@@ -6,24 +6,17 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 
-
 // Local imports
 import { DataTable } from "@/components/ui/data-table";
 
-
-
-
-import { RedyApropveColumns,  } from "./OngoinColum";
-
+import { RedyApropveColumns } from "./OngoinColum";
 
 import { CustomerDataType, oderData } from "@/data/OngoingOrder";
 
 const ReadyAprovalContainer = () => {
- 
   return (
     <div className="pb-10">
       <TableContainer columns={RedyApropveColumns} data={oderData} />
-      
     </div>
   );
 };
@@ -44,7 +37,7 @@ const TableContainer = ({
   });
   return (
     <>
-      <DataTable table={table} columns={columns} title="Ongoin Order Status" />
+      <DataTable table={table} columns={columns} title="Ongoing Order Status" />
     </>
   );
 };

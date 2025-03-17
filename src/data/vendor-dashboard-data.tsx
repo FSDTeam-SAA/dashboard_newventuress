@@ -1,5 +1,4 @@
 import {
-  BookImage,
   Box,
   Gift,
   LayoutDashboard,
@@ -28,12 +27,12 @@ export const sidebarContents = [
     icon: <LayoutDashboard className="h-[16px] w-[16px]" />,
     href: "/",
   },
-  {
-    id: 2,
-    name: "Media",
-    icon: <BookImage className="h-[16px] w-[16px]" />,
-    href: "/media",
-  },
+  // {
+  //   id: 2,
+  //   name: "Media",
+  //   icon: <BookImage className="h-[16px] w-[16px]" />,
+  //   href: "/media",
+  // },
   {
     id: 3,
     name: "Category",
@@ -99,19 +98,19 @@ export const sidebarContents = [
     icon: <ShoppingCart className="h-[16px] w-[16px]" />,
     href: "/orders",
   },
-  {
-    id: 8,
-    name: "Customer",
-    icon: (
-      <Image
-        src="/assets/img/customer_icon.png"
-        alt="customer"
-        width={16}
-        height={16}
-      />
-    ),
-    href: "/customers",
-  },
+  // {
+  //   id: 8,
+  //   name: "Customer",
+  //   icon: (
+  //     <Image
+  //       src="/assets/img/customer_icon.png"
+  //       alt="customer"
+  //       width={16}
+  //       height={16}
+  //     />
+  //   ),
+  //   href: "/customers",
+  // },
   {
     id: 9,
     name: "Store management",
@@ -171,19 +170,19 @@ export const sidebarContents = [
     ),
     href: "/blogs-management",
   },
-  {
-    id: 14,
-    name: "Content Management",
-    icon: (
-      <Image
-        src="/assets/img/content-management.png"
-        alt="content management"
-        width={16}
-        height={16}
-      />
-    ),
-    href: "/content-management",
-  },
+  // {
+  //   id: 14,
+  //   name: "Content Management",
+  //   icon: (
+  //     <Image
+  //       src="/assets/img/content-management.png"
+  //       alt="content management"
+  //       width={16}
+  //       height={16}
+  //     />
+  //   ),
+  //   href: "/content-management",
+  // },
   {
     id: 15,
     name: "Reports",
