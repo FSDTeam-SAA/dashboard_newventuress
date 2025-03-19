@@ -142,6 +142,9 @@ export default function AddNewSubCategory({
     // Append categoryID as a single value (the API will handle it as an array)
     formDataToSubmit.append("categoryID", formData.categoryID);
 
+    // Add the selected industry to the form data
+    formDataToSubmit.append("industry", selectedIndustry);
+
     if (imageFile) formDataToSubmit.append("image", imageFile);
 
     try {
