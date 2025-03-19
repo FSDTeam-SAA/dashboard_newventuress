@@ -1,15 +1,12 @@
-
-import React from 'react'
-import SubCategory from './_components/SubCategory'
+import React from "react";
+import SubCategory from "./_components/SubCategory";
 
 const page = () => {
-       
   return (
-    <div >
-
-<SubCategory/>
+    <div>
+      <SubCategory />
     </div>
-  )
-}
+  );
+};
 
-export default page
+export default page;

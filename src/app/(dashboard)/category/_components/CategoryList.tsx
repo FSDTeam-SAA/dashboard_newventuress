@@ -12,7 +12,7 @@ export default function CategoryList({ show }: any) {
   const [currentPage, setCurrentPage] = useState(1);
   const session = useSession();
   const token = session.data?.user?.token;
-
+  console.log(show);
   const { data, isLoading, isError } = useQuery<categoryDataResponse>({
     queryKey: ["allcategory", currentPage, show],
     queryFn: async (): Promise<categoryDataResponse> =>
@@ -28,7 +28,7 @@ export default function CategoryList({ show }: any) {
       ).then((res) => res.json() as Promise<categoryDataResponse>),
   });
 
-  console.log({data})
+  console.log({ data });
 
   const queryClient = useQueryClient();
   const { mutate } = useMutation({
