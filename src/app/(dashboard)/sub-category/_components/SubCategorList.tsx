@@ -2,31 +2,45 @@
 import { useState } from "react";
 import PacificPagination from "@/components/ui/PacificPagination";
 
-import { categoryDataType, SubCategoryDataType } from "@/data/categoryDatatype";
+import type {
+  categoryDataType,
+  SubCategoryDataType,
+} from "@/data/categoryDatatype";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import NotFound from "@/components/shared/NotFound/NotFound";
 import { useSession } from "next-auth/react";
 import { SubCategoryCard } from "./subCategoryCard";
 
-export default function SubCategorList() {
+export default function SubCategorList({ show }: any) {
   const [currentPage, setCurrentPage] = useState(1);
+  // const [selectedIndustry, setSelectedIndustry] = useState<string | null>(null);
+
   const session = useSession();
   const token = session.data?.user?.token;
 
+  // Extract industries from the show prop
+  // const industries = Array.isArray(show)
+  //   ? show
+  //   : ["recreational", "cbd", "industry"];
+
   const { data, isLoading, isError } = useQuery<any>({
-    queryKey: ["subcategory", currentPage],
-    queryFn: async (): Promise<any> =>
-      fetch(
-        `${
-          process.env.NEXT_PUBLIC_BACKEND_URL
-        }/api/subcategories?page=${currentPage}&limit=${8}`,
-        {
-          method: "GET",
-        }
-      ).then((res) => res.json() as Promise<any>),
+    queryKey: ["subcategory", currentPage, show],
+    queryFn: async (): Promise<any> => {
+      // Use the industry-specific endpoint if an industry is selected
+      const url = show
+        ? `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/subcategories/${
+            show === "industry" ? "all" : show
+          }?page=${currentPage}&limit=${8}`
+        : `${
+            process.env.NEXT_PUBLIC_BACKEND_URL
+          }/api/subcategories?page=${currentPage}&limit=${8}`;
+
+      return fetch(url, {
+        method: "GET",
+      }).then((res) => res.json() as Promise<any>);
+    },
   });
-  console.log(data);
 
   const queryClient = useQueryClient();
   const { mutate } = useMutation({
@@ -121,26 +135,33 @@ export default function SubCategorList() {
       <div className="min-h-screen max-w-[1506px] p-4 md:p-6 bg-white rounded-[12px]">
         <div className="mx-auto">
           <div className="mb-6 rounded-t-3xl bg-primary p-4">
-            <h1 className="text-[28px] font-semibold text-white">
-              Sub Category List
-            </h1>
+            <div className="flex justify-between items-center">
+              <h1 className="text-[28px] font-semibold text-white">
+                Sub Category List
+              </h1>
+            </div>
           </div>
           <div>{content}</div>
         </div>
       </div>
       <div className="mt-[40px] flex justify-between">
         <div className="text-[#444444] font-normal text-[16px]">
-          Showing {currentPage} to {data?.pagination?.totalPages} in first
+          Showing {currentPage} to{" "}
+          {data?.pagination?.totalPages || data?.meta?.totalPages || 1} in first
           entries
         </div>
         <div className="w-[400px]">
-          {data && data?.meta && data?.meta?.totalPages > 1 && (
-            <PacificPagination
-              currentPage={currentPage}
-              onPageChange={(page) => setCurrentPage(page)}
-              totalPages={data?.meta?.totalPages}
-            />
-          )}
+          {data &&
+            (data?.meta?.totalPages > 1 ||
+              data?.pagination?.totalPages > 1) && (
+              <PacificPagination
+                currentPage={currentPage}
+                onPageChange={(page) => setCurrentPage(page)}
+                totalPages={
+                  data?.meta?.totalPages || data?.pagination?.totalPages
+                }
+              />
+            )}
         </div>
       </div>
     </div>
