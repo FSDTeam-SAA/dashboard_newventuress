@@ -7,7 +7,7 @@ import { ReactNode } from "react";
 // Local imports
 import { cn } from "@/lib/utils";
 import LoginBackButton from "./login-back-button";
-import logo from '../../../public/assets/img/logo.png'
+import logo from "../../../public/assets/img/logo.png";
 
 interface AuthUIProviderProps {
   children: ReactNode;

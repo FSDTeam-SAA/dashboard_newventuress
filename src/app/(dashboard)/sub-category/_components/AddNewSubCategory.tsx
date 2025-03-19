@@ -36,6 +36,8 @@ export default function AddNewSubCategory({
   const [isLoading, setIsLoading] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loadingCategories, setLoadingCategories] = useState(false);
+  const [selectedIndustry, setSelectedIndustry] =
+    useState<string>("recreational");
 
   const [formData, setFormData] = useState({
     subCategoryName: "",
@@ -49,7 +51,7 @@ export default function AddNewSubCategory({
       setLoadingCategories(true);
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/categories`,
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/categories/${selectedIndustry}`,
           {
             headers: {
               Authorization: `Bearer ${process.env.NEXT_PUBLIC_API_TOKEN}`,
@@ -74,7 +76,7 @@ export default function AddNewSubCategory({
     };
 
     fetchCategories();
-  }, []);
+  }, [selectedIndustry]);
 
   const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -112,6 +114,15 @@ export default function AddNewSubCategory({
     setFormData((prevData) => ({
       ...prevData,
       categoryID: value,
+    }));
+  };
+
+  const handleIndustryChange = (industry: string) => {
+    setSelectedIndustry(industry);
+    // Reset category selection when industry changes
+    setFormData((prev) => ({
+      ...prev,
+      categoryID: "",
     }));
   };
 
@@ -178,6 +189,43 @@ export default function AddNewSubCategory({
               value={formData.subCategoryName}
               onChange={handleInputChange}
             />
+
+            <div className="space-y-2">
+              <Label>Industry Type *</Label>
+              <div className="flex gap-4 items-center mt-2">
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="radio"
+                    id="recreational"
+                    name="industry"
+                    value="recreational"
+                    checked={selectedIndustry === "recreational"}
+                    onChange={() => handleIndustryChange("recreational")}
+                    className="h-4 w-4 text-primary"
+                  />
+                  <Label
+                    htmlFor="recreational"
+                    className="font-normal cursor-pointer"
+                  >
+                    Recreational
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="radio"
+                    id="cbd"
+                    name="industry"
+                    value="cbd"
+                    checked={selectedIndustry === "cbd"}
+                    onChange={() => handleIndustryChange("cbd")}
+                    className="h-4 w-4 text-primary"
+                  />
+                  <Label htmlFor="cbd" className="font-normal cursor-pointer">
+                    CBD
+                  </Label>
+                </div>
+              </div>
+            </div>
 
             <div className="space-y-2">
               <Label htmlFor="category">Category *</Label>
