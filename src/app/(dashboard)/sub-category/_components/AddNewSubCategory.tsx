@@ -199,6 +199,20 @@ export default function AddNewSubCategory({
                 <div className="flex items-center space-x-2">
                   <input
                     type="radio"
+                    id="cbd"
+                    name="industry"
+                    value="cbd"
+                    checked={selectedIndustry === "cbd"}
+                    onChange={() => handleIndustryChange("cbd")}
+                    className="h-4 w-4 text-primary"
+                  />
+                  <Label htmlFor="cbd" className="font-normal cursor-pointer">
+                    HEMP/CBD
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="radio"
                     id="recreational"
                     name="industry"
                     value="recreational"
@@ -210,21 +224,7 @@ export default function AddNewSubCategory({
                     htmlFor="recreational"
                     className="font-normal cursor-pointer"
                   >
-                    Recreational
-                  </Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <input
-                    type="radio"
-                    id="cbd"
-                    name="industry"
-                    value="cbd"
-                    checked={selectedIndustry === "cbd"}
-                    onChange={() => handleIndustryChange("cbd")}
-                    className="h-4 w-4 text-primary"
-                  />
-                  <Label htmlFor="cbd" className="font-normal cursor-pointer">
-                    CBD
+                    Recreational Cannabis
                   </Label>
                 </div>
               </div>
