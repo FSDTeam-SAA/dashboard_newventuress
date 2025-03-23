@@ -26,19 +26,18 @@ export function CategoryCard({
   title,
   imageUrl,
   onDelete,
-  description,
+  // description,
   categoryId,
   industry,
-  subCategory,
-}: CategoryCardProps) {
+}: // subCategory,
+CategoryCardProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isOpenEditModal, setIsOpenEditModal] = useState(false);
 
-  const industryMap: Record<string, string> = {
-    cbd: "HEMP/CBD",
-    recreational: "Recreational Cannabis",
-  };
-  
+  // const industryMap: Record<string, string> = {
+  //   cbd: "HEMP/CBD",
+  //   recreational: "Recreational Cannabis",
+  // };
 
   const handleModal = () => setIsOpen(true);
   const handleCategoryEditModal = () => setIsOpenEditModal(true);
@@ -50,14 +49,16 @@ export function CategoryCard({
         <CardContent className="pt-4">
           <div className="aspect-square relative mb-3">
             <Image
-              src={imageUrl}
+              src={
+                imageUrl ||
+                "https://images.pexels.com/photos/28216688/pexels-photo-28216688/free-photo-of-autumn-camping.png?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+              }
               alt={imageUrl}
               fill
               className="object-cover w-[306px] h-[270px] rounded-xl"
             />
             {industry && (
               <Badge variant="default" className="absolute -top-6 -right-6">
-
                 {industry == "recreational"
                   ? "RECREATIONAL CANNABIS"
                   : "HEMP/CBD"}

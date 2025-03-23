@@ -23,7 +23,7 @@ export type SidebarContentType = {
 export const sidebarContents = [
   {
     id: 1,
-    name: "Dashboard",
+    name: "Overview",
     icon: <LayoutDashboard className="h-[16px] w-[16px]" />,
     href: "/",
   },

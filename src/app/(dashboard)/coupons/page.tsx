@@ -4,11 +4,10 @@ import React from "react";
 // import CuponHeader from "./_components/CuponHeader";
 import TableAndAddFromToggler from "./_components/TableAndAddFromToggler";
 
-
 const page = () => {
   return (
     <div>
-      <TableAndAddFromToggler/>
+      <TableAndAddFromToggler />
     </div>
   );
 };
