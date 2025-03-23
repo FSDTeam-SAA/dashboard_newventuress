@@ -1,11 +1,12 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
 // Packages
 import { Bell, LogOut, MessageCircleMore, Search } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
-import { useSession } from "next-auth/react";
+import { useState, useEffect } from "react";
+import { useSession, getSession } from "next-auth/react";
 
 // Local Imports
 import { getCurrentTab } from "@/data/vendor-dashboard-data";
@@ -40,7 +41,10 @@ const DashNav = () => {
               "w-full h-[46px] rounded-[4px] pl-[16px] flex items-center gap-[12px] font-medium text-[16px] 2xl:text-[18px] leading-[21.4px] transition-colors duration-300 bg-transparent text-[#152764] "
             )}
           >
-            {currentTab?.icon} {currentTab?.name}
+            {currentTab?.icon}{" "}
+            {currentTab?.name === "Overview"
+              ? "Admin Dashboard"
+              : currentTab?.name}
           </div>
         </div>
         <div className="flex items-center gap-8">
@@ -76,7 +80,31 @@ const SearchButton = () => {
 
 const DashRightSide = () => {
   const [showModal, setShowModal] = useState(false);
-  const { data: session } = useSession();
+  const { data: sessionData, update } = useSession();
+  const [userData, setUserData] = useState(sessionData?.user);
+
+  // Force session update after first render
+  useEffect(() => {
+    const updateSessionAfterMount = async () => {
+      // Force a session update
+      await update();
+
+      // As a fallback, also try getSession
+      const session = await getSession();
+      if (session?.user) {
+        setUserData(session.user);
+      }
+    };
+
+    updateSessionAfterMount();
+  }, []);
+
+  // Update userData when session changes
+  useEffect(() => {
+    if (sessionData?.user) {
+      setUserData(sessionData.user);
+    }
+  }, [sessionData]);
 
   const handleLogout = () => {
     setShowModal(true);
@@ -103,15 +131,15 @@ const DashRightSide = () => {
           <div className="flex items-center gap-x-[10px] cursor-pointer bg-gray-100 rounded-[24px] p-2">
             <Avatar>
               <AvatarFallback className="border border-blue-400">
-                {session?.user?.fullName?.[0]}
+                {userData?.fullName?.[0] || "?"}
               </AvatarFallback>
             </Avatar>
             <div className="flex flex-col gap-y-[2px]">
               <h3 className="text-[16px] font-medium leading-[20px] text-gradient">
-                {session?.user?.fullName}
+                {userData?.fullName || "Loading..."}
               </h3>
               <p className="text-[12px] leading-[14px] font-normal text-[#B0CBE4]">
-                {session?.user?.email}
+                {userData?.email || "Loading..."}
               </p>
             </div>
           </div>
