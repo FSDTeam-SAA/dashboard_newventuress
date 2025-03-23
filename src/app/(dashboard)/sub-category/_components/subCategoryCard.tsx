@@ -109,7 +109,10 @@ export function SubCategoryCard({
         <CardContent className="pt-4">
           <div className="aspect-square relative mb-3">
             <Image
-              src={imageUrl || "/placeholder.svg"}
+              src={
+                imageUrl ||
+                "https://images.pexels.com/photos/28216688/pexels-photo-28216688/free-photo-of-autumn-camping.png?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+              }
               alt={title}
               fill
               className="object-cover w-[306px] h-[270px] rounded-xl"
