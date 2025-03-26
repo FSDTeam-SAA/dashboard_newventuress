@@ -11,7 +11,7 @@ const Page = () => {
       sidebarImage="https://i.ibb.co.com/jPFh8S6d/image-5.png"
       fullWidth
     >
-      <div className="max-w-[500px] mx-auto">
+      <div className="max-w-[500px] mx-auto *:dark:text-black">
         <LoginForm />
       </div>
     </AuthUIProvider>
