@@ -25,11 +25,11 @@ export const SponsorshipColumns: ColumnDef<SponsorshipData>[] = [
     },
   },
   {
-    header: "TotalListing",
+    header: "Sponsored Listing",
     cell: ({ row }) => {
       return (
         <div className="text-[16px] font-normal leading-[19.2px] text-[#444444] space-y-[8px]">
-          <p>Auction: {row.original.numberOfListing}</p>
+          <p>Lisitng Number : {row.original.numberOfListing}</p>
         </div>
       );
     },

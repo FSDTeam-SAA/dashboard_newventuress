@@ -11,7 +11,7 @@ const showList = [
   { id: 3, name: "Expired", value: "expired" },
 ];
 
-function CustomerFilter({searchQuery, setSearchQuery}: any) {
+function CustomerFilter({ searchQuery, setSearchQuery }: any) {
   const [show, setShow] = useState<string>("all");
 
   return (
@@ -36,11 +36,11 @@ function CustomerFilter({searchQuery, setSearchQuery}: any) {
           onChange={(e) => setSearchQuery(e.target.value)}
         />
       </div>
-      <div>
+      {/* <div>
         <button className="rounded-lg bg-primary px-[20px] py-[9px] text-[#F5F5F5]">
           Bulk Delete
         </button>
-      </div>
+      </div> */}
     </div>
   );
 }

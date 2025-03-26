@@ -15,18 +15,18 @@ export const MembershipColumns: ColumnDef<MembershipPlan>[] = [
       );
     },
   },
+
   {
-    header: "Time",
-    cell: ({ row }) => {
-      return (
-        <p className="text-[16px] leading-[19.2px] font-normal text-[#444444]">
-          {row.original.time || "3:00"}
-        </p>
-      );
-    },
+    header: "Description",
+    cell: ({ row }) => (
+      <p className="text-gradient leading-[21.6px]">
+        {row.original.description || "No Stote"}
+      </p>
+    ),
   },
+
   {
-    header: "Remaining",
+    header: "Plan Details",
     cell: ({ row }) => {
       return (
         <div className="text-[16px] font-normal leading-[19.2px] text-[#444444] space-y-[8px]">
@@ -37,15 +37,16 @@ export const MembershipColumns: ColumnDef<MembershipPlan>[] = [
       );
     },
   },
-
-  // {
-  //   header: "Store",
-  //   cell: ({ row }) => (
-  //     <p className="text-gradient text-[18px] leading-[21.6px] font-semibold">
-  //       {row.original?.store || "No Stote"}
-  //     </p>
-  //   ),
-  // },
+  {
+    header: "Price",
+    cell: ({ row }) => {
+      return (
+        <p className="text-[16px] leading-[19.2px] font-normal text-[#444444]">
+          {row.original?.price || "00"}
+        </p>
+      );
+    },
+  },
   {
     id: "actions",
     cell: ({ row }) => (
