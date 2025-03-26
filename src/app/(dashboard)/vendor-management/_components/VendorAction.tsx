@@ -3,7 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/SidebarScrollArea";
 import VeganModal from "@/components/ui/vegan-modal";
-import { User } from "@/types/admin";
+import type { User } from "@/types/admin";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -86,15 +86,21 @@ const VendorAction = ({ user }: Props) => {
 
   const handleApproveLicense = (
     licenseType: LicenseType,
-    licenseId: string
+    licenseId: string,
+    businessInfoId: string,
+    licenseGroupId: string,
+    licenseIndex: number
   ) => {
     setLoading(licenseId);
     const data = {
-      licenseId,
-      licenseType,
       userId: user._id,
+      businessInfoId,
+      licenseId: licenseGroupId, // Using the license group ID instead of individual license ID
+      licenseType,
+      licenseIndex, // Using the correct index of the license in the array
     };
 
+    console.log("Sending license approval data:", data);
     // api call
     approveLicense(data);
   };
@@ -282,7 +288,10 @@ const VendorAction = ({ user }: Props) => {
                                         onClick={() =>
                                           handleApproveLicense(
                                             "businessLicense",
-                                            license._id
+                                            license._id,
+                                            business._id,
+                                            licenseGroup._id,
+                                            i
                                           )
                                         }
                                         disabled={license._id === loading}
@@ -336,7 +345,10 @@ const VendorAction = ({ user }: Props) => {
                                         onClick={() =>
                                           handleApproveLicense(
                                             "cannabisLicense",
-                                            license._id
+                                            license._id,
+                                            business._id,
+                                            licenseGroup._id,
+                                            i
                                           )
                                         }
                                         disabled={license._id === loading}
@@ -389,7 +401,10 @@ const VendorAction = ({ user }: Props) => {
                                       onClick={() =>
                                         handleApproveLicense(
                                           "metrcLicense",
-                                          license._id
+                                          license._id,
+                                          business._id,
+                                          licenseGroup._id,
+                                          i
                                         )
                                       }
                                       disabled={license._id === loading}
