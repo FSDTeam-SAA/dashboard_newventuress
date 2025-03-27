@@ -5,6 +5,7 @@ import MembershipContainer from "./membership-container";
 import MembershipFilter from "./membership-filter";
 import AddSponsoredListing from "./add-sponsored-list";
 import AddSponsoredContainer from "./add-sponsoredContainer";
+import MembershipRequestsTable from "./membership-request-table";
 
 const Membership = () => {
   // Main tab state
@@ -22,8 +23,12 @@ const Membership = () => {
     // Reset form states when changing tabs to prevent conflicts
     if (value === "membership") {
       setShowAdditionalMembership(false);
-    } else {
+    } else if (value === "additional") {
       setShowMembership(false);
+    } else {
+      // For requests tab, hide both forms
+      setShowMembership(false);
+      setShowAdditionalMembership(false);
     }
   };
 
@@ -39,6 +44,10 @@ const Membership = () => {
           setShowSponsoredListing={setShowAdditionalMembership}
         />
       );
+    }
+
+    if (tabValue === "requests") {
+      return <MembershipRequestsTable />;
     }
 
     return tabValue === "membership" ? (
