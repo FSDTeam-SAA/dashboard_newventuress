@@ -114,11 +114,7 @@ export default function SubCategorList({ show }: any) {
           <SubCategoryCard
             key={category._id}
             title={category.subCategoryName}
-            imageUrl={
-              category.image === ""
-                ? "https://images.pexels.com/photos/28216688/pexels-photo-28216688/free-photo-of-autumn-camping.png?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
-                : category.image
-            }
+            imageUrl={category.image}
             description={category.shortDescription}
             categoryId={category.categoryID}
             subCategoryId={category._id}

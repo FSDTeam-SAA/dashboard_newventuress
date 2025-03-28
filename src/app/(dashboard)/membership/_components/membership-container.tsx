@@ -23,23 +23,27 @@ const MembershipContainer = () => {
 
   const session = useSession();
   const token = session.data?.user.token;
-  console.log({ token });
+  // console.log({ token });
 
   const { data, isError, isLoading, error } = useQuery<MembershipResponse>({
     queryKey: ["membership"],
-    queryFn: () =>
-      fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/memberships`, {
+    queryFn: () => {
+      if (!token) {
+        throw new Error("No authentication token available");
+      }
+      return fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/memberships`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-
           Authorization: `Bearer ${token}`,
         },
-      }).then((res) => res.json()),
+      }).then((res) => res.json());
+    },
+    enabled: !!token, // This ensures the query only runs when token is available
   });
 
-  console.log("response data:", data);
-  console.log(data?.data);
+  // console.log("response data:", data);
+  // console.log(data?.data);
 
   let content;
   if (isLoading) {
