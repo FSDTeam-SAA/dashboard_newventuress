@@ -74,7 +74,7 @@ const MembershipRequestsTable = () => {
     try {
       setLoading(true);
       const response = await fetch(
-        "http://localhost:8001/api/membership/details/all"
+        "${process.env.NEXT_PUBLIC_BACKEND_URL}/api/membership/details/all"
       );
       const data = await response.json();
 
@@ -105,7 +105,7 @@ const MembershipRequestsTable = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:8001/api/membership/status/edit/${id}`,
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/membership/status/edit/${id}`,
         {
           method: "PUT",
           headers: {
