@@ -74,7 +74,7 @@ const MembershipRequestsTable = () => {
     try {
       setLoading(true);
       const response = await fetch(
-        "${process.env.NEXT_PUBLIC_BACKEND_URL}/api/membership/details/all"
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/membership/details/all`
       );
       const data = await response.json();
 
