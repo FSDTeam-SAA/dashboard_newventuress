@@ -51,7 +51,7 @@ export default function AddNewSubCategory({
       setLoadingCategories(true);
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/categories/${selectedIndustry}`,
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/categories?industry=${selectedIndustry}`,
           {
             headers: {
               Authorization: `Bearer ${process.env.NEXT_PUBLIC_API_TOKEN}`,
