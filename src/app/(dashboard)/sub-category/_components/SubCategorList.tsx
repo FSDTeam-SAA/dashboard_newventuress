@@ -14,33 +14,41 @@ import { SubCategoryCard } from "./subCategoryCard";
 
 export default function SubCategorList({ show }: any) {
   const [currentPage, setCurrentPage] = useState(1);
-  // const [selectedIndustry, setSelectedIndustry] = useState<string | null>(null);
-
   const session = useSession();
   const token = session.data?.user?.token;
 
-  // Extract industries from the show prop
-  // const industries = Array.isArray(show)
-  //   ? show
-  //   : ["recreational", "cbd", "industry"];
+  // Special case: if show is "industry", we show all subcategories
+  // Otherwise, filter by the specific industry value
+  const shouldFilterByIndustry = show && show !== "industry";
+  const industry = shouldFilterByIndustry ? show : null;
 
   const { data, isLoading, isError } = useQuery<any>({
-    queryKey: ["subcategory", currentPage, show],
+    queryKey: ["subcategory", currentPage],
     queryFn: async (): Promise<any> => {
-      // Use the industry-specific endpoint if an industry is selected
-      const url = show
-        ? `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/subcategories/${
-            show === "industry" ? "all" : show
-          }?page=${currentPage}&limit=${8}`
-        : `${
-            process.env.NEXT_PUBLIC_BACKEND_URL
-          }/api/subcategories?page=${currentPage}&limit=${8}`;
+      const url = `${
+        process.env.NEXT_PUBLIC_BACKEND_URL
+      }/api/subcategories?page=${currentPage}&limit=${8}`;
 
       return fetch(url, {
         method: "GET",
       }).then((res) => res.json() as Promise<any>);
     },
   });
+
+  // Apply filtering only if we should filter by industry
+  const filteredData = data?.data
+    ? shouldFilterByIndustry
+      ? data.data.filter(
+          (item: SubCategoryDataType) => item.industry === industry
+        )
+      : data.data
+    : [];
+
+  // console.log("Show value:", show);
+  // console.log("Should filter by industry:", shouldFilterByIndustry);
+  // console.log("Industry filter:", industry);
+  // console.log("Total subcategories:", data?.data?.length);
+  // console.log("Filtered subcategories:", filteredData.length);
 
   const queryClient = useQueryClient();
   const { mutate } = useMutation({
@@ -101,24 +109,26 @@ export default function SubCategorList({ show }: any) {
     );
   } else if (isError) {
     content = <NotFound message="No found your data" />;
-  } else if (data && data.data && data.data.length === 0) {
+  } else if (filteredData.length === 0) {
     content = (
       <div className="mt-7">
-        <NotFound message="No found your data" />
+        <NotFound
+          message={
+            shouldFilterByIndustry
+              ? `No subcategories found for ${industry} industry`
+              : "No subcategories found"
+          }
+        />
       </div>
     );
   } else {
     content = (
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {data?.data.map((category: SubCategoryDataType) => (
+        {filteredData.map((category: SubCategoryDataType) => (
           <SubCategoryCard
             key={category._id}
             title={category.subCategoryName}
-            imageUrl={
-              category.image === ""
-                ? "https://images.pexels.com/photos/28216688/pexels-photo-28216688/free-photo-of-autumn-camping.png?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
-                : category.image
-            }
+            imageUrl={category.image}
             description={category.shortDescription}
             categoryId={category.categoryID}
             subCategoryId={category._id}
@@ -137,7 +147,8 @@ export default function SubCategorList({ show }: any) {
           <div className="mb-6 rounded-t-3xl bg-primary p-4">
             <div className="flex justify-between items-center">
               <h1 className="text-[28px] font-semibold text-white">
-                Sub Category List
+                Sub Category List{" "}
+                {shouldFilterByIndustry ? `- ${industry}` : ""}
               </h1>
             </div>
           </div>
