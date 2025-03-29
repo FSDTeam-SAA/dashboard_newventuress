@@ -56,7 +56,7 @@ const MembershipFilter = ({
     <div className="h-[60px] p-[8px] rounded-lg bg-white w-full flex justify-between items-center">
       <div className="flex-1">
         <Tabs value={tabValue} onValueChange={setTabValue} className="w-full">
-          <TabsList className="grid w-[65%] grid-cols-3">
+          <TabsList className="grid min-w-[65%] grid-cols-3">
             <TabsTrigger value="membership">Membership Plans</TabsTrigger>
             <TabsTrigger value="additional">Additional Plans</TabsTrigger>
             <TabsTrigger value="requests">Membership Requests</TabsTrigger>
