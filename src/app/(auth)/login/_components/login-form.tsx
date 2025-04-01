@@ -1,42 +1,32 @@
-"use client";
+"use client"
 
 // Packages
-import { zodResolver } from "@hookform/resolvers/zod";
-import { motion } from "framer-motion";
-import { useRouter } from "next/navigation";
-import { useTransition } from "react";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
-import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod"
+import { motion } from "framer-motion"
+import { useRouter } from "next/navigation"
+import { useTransition } from "react"
+import { useForm } from "react-hook-form"
+import { toast } from "sonner"
+import { z } from "zod"
 
 // Local imports
-
-import { ServerResType, SignInWithEmailAndPassword } from "@/actions/auth/auth";
-import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+import { type ServerResType, SignInWithEmailAndPassword } from "@/actions/auth/auth"
+import { Button } from "@/components/ui/button"
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
 
 export const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
   password: z.string().min(8, "Password must be at least 8 characters long"),
-  //   agreed: z
-  //     .boolean()
-  //     .refine((val) => val, "Please agree to the terms and privacy policy"),
-});
+})
 
-export type LoginFormValues = z.infer<typeof loginSchema>;
+// Export the type so it can be imported in other files
+export type LoginFormValues = z.infer<typeof loginSchema>
 
 export default function LoginForm() {
-  const [isPending, startTransition] = useTransition();
+  const [isPending, startTransition] = useTransition()
 
-  const router = useRouter();
+  const router = useRouter()
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -44,38 +34,40 @@ export default function LoginForm() {
       email: "",
       password: "",
     },
-  });
+  })
 
   const onSubmit = async (data: LoginFormValues) => {
     startTransition(() => {
       SignInWithEmailAndPassword(data)
         .then((res: ServerResType) => {
-          console.log(res);
+          console.log(res)
           if (res.success) {
             toast.success("Login successfull 🎉", {
               position: "bottom-right",
               richColors: true,
-            });
+            })
 
-            router.push("/");
-
-            router.refresh();
+            // Add a small delay before redirecting to allow the session to be established
+            setTimeout(() => {
+              router.push("/")
+              router.refresh()
+            }, 500)
           } else {
             toast.error(res.message, {
               position: "top-center",
               richColors: true,
-            });
+            })
           }
         })
         .catch((err) => {
-          console.log(err.message);
+          console.log(err.message)
           toast.error(err.message, {
             position: "bottom-right",
             richColors: true,
-          });
-        });
-    });
-  };
+          })
+        })
+    })
+  }
 
   return (
     <motion.div
@@ -144,76 +136,13 @@ export default function LoginForm() {
             )}
           />
 
-          {/* <FormField
-            name="agreed"
-            control={form.control}
-            render={({ field }) => (
-              <FormItem>
-                <div className="flex items-center space-x-2 text-[#9E9E9E]">
-                  <Checkbox
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                    className=" border-2 border-[#9E9E9E] data-[state=checked]:bg-[#00417E] data-[state=checked]:text-white"
-                  />
-                  <label
-                    htmlFor="remember"
-                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                  >
-                    I agree with the{" "}
-                    <Link
-                      href="#"
-                      className="text-gradient dark:text-gradient-pink"
-                    >
-                      term of service
-                    </Link>{" "}
-                    and{" "}
-                    <Link
-                      href="#"
-                      className="text-gradient dark:text-gradient-pink"
-                    >
-                      privacy policy
-                    </Link>
-                  </label>
-                </div>
-                <FormMessage />
-              </FormItem>
-            )}
-          /> */}
-
-          <Button
-            type="submit"
-            className="w-full  p-[24px] h-[56px]"
-            disabled={isPending}
-          >
+          <Button type="submit" className="w-full p-[24px] h-[56px]" disabled={isPending}>
             {isPending ? "Logging in..." : "Log In"}
           </Button>
         </form>
       </Form>
-      <div className="text-center">
-        {/* <div className="mt-[24px]">
-          <Link
-            href="/forgot-password"
-            className={`text-gradient dark:text-gradient-pink text-[16px] font-normal leading-[19.2px] ${
-              isPending && "pointer-events-none"
-            }`}
-          >
-            Forgot Password?
-          </Link>
-        </div> */}
-        {/* <div className="mt-[40px]">
-          <span className="text-[16px] text-[#808080]">
-            Don&apos;t have an account?{" "}
-          </span>
-          <Link
-            href="/registration"
-            className={`text-gradient dark:text-gradient-pink text-[16px] font-normal  ${
-              isPending && "pointer-events-none"
-            }`}
-          >
-            Sign Up
-          </Link>
-        </div> */}
-      </div>
+      <div className="text-center">{/* Additional content can go here */}</div>
     </motion.div>
-  );
+  )
 }
+
