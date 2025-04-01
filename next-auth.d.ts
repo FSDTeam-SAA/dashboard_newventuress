@@ -1,20 +1,40 @@
-// src/types/next-auth.d.ts or @types/next-auth.d.ts
-import "next-auth";
+import "next-auth"
 
 declare module "next-auth" {
   interface Session {
     user: {
-      id: string;
-      token: string;
-      email: string;
-      fullName: string;
-      industry: string;
-      profession: string[];
-      [key: string]: any; // Allow additional dynamic properties
-    };
+      id: string
+      token: string
+      email: string
+      fullName: string
+      industry: string
+      profession: string[]
+      [key: string]: any // Allow additional dynamic properties
+    }
   }
 
   interface User {
-    token?: string; // Optional token in User response if required
+    id: string
+    email: string
+    fullName: string
+    industry: string
+    profession: string[]
+    token: string
+    [key: string]: any // Allow additional dynamic properties
   }
 }
+
+declare module "next-auth/jwt" {
+  interface JWT {
+    user?: {
+      id: string
+      token: string
+      email: string
+      fullName: string
+      industry: string
+      profession: string[]
+      [key: string]: any // Allow additional dynamic properties
+    }
+  }
+}
+
