@@ -50,9 +50,9 @@ export default function LoginForm() {
     startTransition(() => {
       SignInWithEmailAndPassword(data)
         .then((res: ServerResType) => {
-          console.log(res);
+          // console.log(res);
           if (res.success) {
-            toast.success("Login successfull 🎉", {
+            toast.success("Login successfull ✅", {
               position: "bottom-right",
               richColors: true,
             });
