@@ -1,16 +1,11 @@
-import React from 'react';
-import SupportHeader from './_components/SupportHeader';
-import SupportFilter from './_components/SupportFilter';
-import AdminSupportContainer from './_components/AdminSupportContainer';
+import ContactListContainer from "./_components/ContactListContainer";
 
-const page = () => {
-    return (
-        <div>
-            <SupportHeader/>
-            <SupportFilter/>
-            <AdminSupportContainer/>
-        </div>
-    );
+const Page = () => {
+  return (
+    <div>
+      <ContactListContainer />
+    </div>
+  );
 };
 
-export default page;
+export default Page;
