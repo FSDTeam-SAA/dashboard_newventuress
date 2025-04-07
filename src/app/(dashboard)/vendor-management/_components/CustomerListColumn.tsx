@@ -35,12 +35,10 @@ export const CustomerListColumn: ColumnDef<User>[] = [
   },
 
   {
-    header: "Business Name",
-    cell: ({ row }) => {
+    header: "Store",
+    cell: () => {
       return (
-        <div className="text-gradient text-[18px] font-semibold">
-          {row.original.businessName}
-        </div>
+        <div className="text-gradient text-[18px] font-semibold">store 10</div>
       );
     },
   },
