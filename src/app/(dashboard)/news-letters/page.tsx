@@ -1,14 +1,18 @@
-import React from 'react';
-import NewsLetterHedder from './_components/NewsLetterHedder';
-import NewsLetterContainer from './_components/NewsLetterContainer';
+"use client";
+import React from "react";
+import NewsLetterHedder from "./_components/NewsLetterHedder";
+import NewsLetterContainer from "./_components/NewsLetterContainer";
+import NewsLetterDataButton from "./_components/NewsLetterDataButton";
 
 const Page = () => {
-    return (
-        <div>
-            <NewsLetterHedder/>
-            <NewsLetterContainer/>
-        </div>
-    );
+  const [activeTab, setActiveTab] = React.useState("subscribers");
+  return (
+    <div>
+      <NewsLetterHedder activeTab={activeTab} setActiveTab={setActiveTab} />
+      {activeTab === "subscribers" && <NewsLetterContainer />}
+      {activeTab === "newsletters" && <NewsLetterDataButton />}
+    </div>
+  );
 };
 
 export default Page;
