@@ -1,5 +1,6 @@
 import {
   Box,
+  Edit,
   Gift,
   LayoutDashboard,
   Mails,
@@ -226,6 +227,12 @@ export const sidebarContents = [
     name: "NewsLetters",
     icon: <Mails className="h-[16px] w-[16px]" />,
     href: "/news-letters",
+  },
+  {
+    id: 21,
+    name: "Godmode",
+    icon: <Edit className="h-[16px] w-[16px]" />,
+    href: "/godmode",
   },
 ] as SidebarContentType[];
 

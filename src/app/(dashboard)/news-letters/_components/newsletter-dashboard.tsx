@@ -103,14 +103,14 @@ const NewsletterDashboard = () => {
       {
         accessorKey: "email",
         header: "Email",
-        cell: ({ row }) => (
+        cell: ({ row }: any) => (
           <div className="font-medium">{row.original.email}</div>
         ),
       },
       {
         accessorKey: "createdAt",
         header: "Created At",
-        cell: ({ row }) => (
+        cell: ({ row }: any) => (
           <div>{format(new Date(row.original.createdAt), "MMM dd, yyyy")}</div>
         ),
       },
@@ -124,27 +124,27 @@ const NewsletterDashboard = () => {
       {
         accessorKey: "emailSubject",
         header: "Subject",
-        cell: ({ row }) => (
+        cell: ({ row }: any) => (
           <div className="font-medium">{row.original.emailSubject}</div>
         ),
       },
       {
         accessorKey: "emailText",
         header: "Content",
-        cell: ({ row }) => (
+        cell: ({ row }: any) => (
           <div className="max-w-[300px] truncate">{row.original.emailText}</div>
         ),
       },
       {
         accessorKey: "createdAt",
         header: "Created At",
-        cell: ({ row }) => (
+        cell: ({ row }: any) => (
           <div>{format(new Date(row.original.createdAt), "MMM dd, yyyy")}</div>
         ),
       },
       {
         id: "actions",
-        cell: ({ row }) => <NewsLetterDataButton row={row} />,
+        cell: () => <NewsLetterDataButton />,
       },
     ],
     []
